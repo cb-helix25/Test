@@ -10,7 +10,7 @@ import {
     Checkbox,
 } from '@fluentui/react';
 import '../../app/styles/MatterOpeningCard.css';
-import { sendCallEvent, lookupClient } from './CallHubApi';
+import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 
 const CallHub: React.FC = () => {
