@@ -12,9 +12,8 @@ import {
 import './MatterOpeningCard.css';
 import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
-import { colours } from '../../colours';
-import { LogicTree } from './LogicTree';
-import { JsonPreview } from './JsonPreview';
+import LogicTree from './LogicTree.tsx';
+import JsonPreview from './JsonPreview.tsx';
 
 const CallHub: React.FC = () => {
     // Core call data
@@ -292,7 +291,7 @@ const CallHub: React.FC = () => {
         email,
         contactPhone,
         countryCode,
-        areaOfWork,
+        areaOfWork: areaOfWork || null,
         notes,
         claimTime,
         contactTime,
@@ -318,11 +317,34 @@ const CallHub: React.FC = () => {
                 <div className="step-content active">
                     <Stack tokens={{ childrenGap: 20 }}>
                         
-                        {/* Primary Question: Is this a client? */}
+                        {/* Call Type Selection */}
                         <div>
                             <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                Is this a client? *
+                                What type of call is this? *
                             </label>
+                            <div className="client-type-selection">
+                                <div
+                                    className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
+                                    onClick={() => setCallKind('enquiry')}
+                                >
+                                    <span className="client-type-label">Enquiry</span>
+                                </div>
+                                <div
+                                    className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
+                                    onClick={() => setCallKind('message')}
+                                >
+                                    <span className="client-type-label">Message</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Primary Question: Is this a client? */}
+                        {callKind && (
+                            <>
+                            <div>
+                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                    Is this a client? *
+                                </label>
                             <div className="client-type-selection">
                                 <div
                                     className={`client-type-icon-btn${isClient === true ? ' active' : ''}`}
@@ -649,6 +671,8 @@ const CallHub: React.FC = () => {
                                 {saveError}
                             </MessageBar>
                         )}
+                            </>
+                        )}
                     </Stack>
                 </div>
             </div>
@@ -659,7 +683,7 @@ const CallHub: React.FC = () => {
                     isClient={isClient}
                     contactPreference={contactPreference}
                     relationship={relationship}
-                    areaOfWork={areaOfWork}
+                    areaOfWork={areaOfWork || null}
                 />
             </div>
 
