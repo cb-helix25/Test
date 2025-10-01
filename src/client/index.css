@@ -1,0 +1,30 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Helix Law Color Palette */
+  --website-blue: #000319;
+  --dark-blue: #061733;
+  --blue: #3690CE;
+  --highlight: #3690CE;
+  --accent: #87F3F3;
+  --cta: #D65541;
+  --grey: #F4F4F6;
+  --grey-text: #6B6B6B;
+  --section-background: #FFFFFF;
+  --border-color: #F4F4F6;
+  --button-background: #0078d4;
+  --button-text: #ffffff;
+  --hover-background: #005a9e;
+
+  color: var(--dark-blue);
+  background-color: var(--grey);
+}
+
+body {
+  margin: 0;
+  font-family: inherit;
+  background-color: var(--grey);
+  color: var(--dark-blue);
+}
