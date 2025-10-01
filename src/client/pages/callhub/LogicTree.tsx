@@ -190,4 +190,5 @@ export const LogicTree: React.FC<LogicTreeProps> = ({
   );
 };
 
+export default LogicTree;
 export type { LogicTreeProps };
