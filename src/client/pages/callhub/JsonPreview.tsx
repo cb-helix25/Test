@@ -139,4 +139,5 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
   );
 };
 
+export default JsonPreview;
 export type { JsonPreviewProps };
