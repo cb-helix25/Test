@@ -9,7 +9,7 @@ import {
     IDropdownOption,
     Checkbox,
 } from '@fluentui/react';
-import '../../app/styles/MatterOpeningCard.css';
+import './MatterOpeningCard.css';
 import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 
