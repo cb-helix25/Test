@@ -12,17 +12,27 @@ import {
 import './MatterOpeningCard.css';
 import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
+import { colours } from '../../colours';
+import { LogicTree } from './LogicTree';
+import { JsonPreview } from './JsonPreview';
 
 const CallHub: React.FC = () => {
+    // Core call data
     const [callKind, setCallKind] = useState<CallKind | null>(null);
     const [enquiryType, setEnquiryType] = useState<EnquiryType | null>(null);
-    const [contactPreference, setContactPreference] = useState<ContactPreference | null>('email');
+    const [contactPreference, setContactPreference] = useState<ContactPreference | null>(null);
     const [email, setEmail] = useState('');
     const [contactPhone, setContactPhone] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [notes, setNotes] = useState('');
     const [countryCode, setCountryCode] = useState('+44');
+    
+    // New logic flow fields
+    const [isClient, setIsClient] = useState<boolean | null>(null);
+    const [relationship, setRelationship] = useState<string | null>(null);
+    
+    // System state
     const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
     const [lookupStatus, setLookupStatus] = useState<string | null>(null);
     const [claimTime, setClaimTime] = useState<number | null>(null);
@@ -272,36 +282,113 @@ const CallHub: React.FC = () => {
         !saving &&
         !abandonTime;
 
+    // Prepare form data for components
+    const formData = {
+        isClient,
+        contactPreference,
+        relationship,
+        firstName,
+        lastName,
+        email,
+        contactPhone,
+        countryCode,
+        areaOfWork,
+        notes,
+        claimTime,
+        contactTime,
+        abandonTime,
+        callKind,
+        enquiryType
+    };
+
     return (
-        <div style={{ padding: 20 }}>
+        <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 400px 350px',
+            gap: '20px',
+            padding: '20px',
+            maxWidth: '1400px',
+            margin: '0 auto'
+        }}>
+            {/* Main Form */}
             <div className="matter-opening-card">
                 <div className="step-header active">
-                    <span className="step-title">Call Hub</span>
+                    <span className="step-title">Call Hub - Real-time Logic</span>
                 </div>
                 <div className="step-content active">
                     <Stack tokens={{ childrenGap: 20 }}>
-                        <div className="client-type-selection">
-                            <div
-                                className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
-                                onClick={() => {
-                                    setCallKind('enquiry');
-                                    setEnquiryType('new');
-                                    setContactPreference('email');
-                                }}
-                            >
-                                <span className="client-type-label">New Enquiry</span>
-                            </div>
-                            <div
-                                className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
-                                onClick={() => {
-                                    setCallKind('message');
-                                    setEnquiryType(null);
-                                    setContactPreference('phone');
-                                }}
-                            >
-                                <span className="client-type-label">Telephone Message</span>
+                        
+                        {/* Primary Question: Is this a client? */}
+                        <div>
+                            <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                Is this a client? *
+                            </label>
+                            <div className="client-type-selection">
+                                <div
+                                    className={`client-type-icon-btn${isClient === true ? ' active' : ''}`}
+                                    onClick={() => {
+                                        setIsClient(true);
+                                        setRelationship(null);
+                                        setContactPreference(null);
+                                    }}
+                                >
+                                    <span className="client-type-label">Yes</span>
+                                </div>
+                                <div
+                                    className={`client-type-icon-btn${isClient === false ? ' active' : ''}`}
+                                    onClick={() => {
+                                        setIsClient(false);
+                                        setContactPreference(null);
+                                        setRelationship(null);
+                                    }}
+                                >
+                                    <span className="client-type-label">No</span>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Client Flow: Contact Preference */}
+                        {isClient === true && (
+                            <div>
+                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                    Do you prefer contact by email or phone? *
+                                </label>
+                                <div className="client-type-selection">
+                                    <div
+                                        className={`client-type-icon-btn${contactPreference === 'email' ? ' active' : ''}`}
+                                        onClick={() => setContactPreference('email')}
+                                    >
+                                        <span className="client-type-label">Email</span>
+                                    </div>
+                                    <div
+                                        className={`client-type-icon-btn${contactPreference === 'phone' ? ' active' : ''}`}
+                                        onClick={() => setContactPreference('phone')}
+                                    >
+                                        <span className="client-type-label">Phone</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Non-Client Flow: Relationship */}
+                        {isClient === false && (
+                            <div>
+                                <Dropdown
+                                    label="What is the relationship with the firm? *"
+                                    placeholder="Select relationship..."
+                                    options={[
+                                        { key: 'prospect', text: 'Prospect' },
+                                        { key: 'opponent', text: 'Opponent' },
+                                        { key: 'opponent-solicitor', text: 'Opponent Solicitor' },
+                                        { key: 'barrister', text: 'Barrister' },
+                                        { key: 'expert', text: 'Expert' },
+                                        { key: 'other', text: 'Other' },
+                                    ]}
+                                    selectedKey={relationship}
+                                    onChange={(_, option) => setRelationship(option?.key as string)}
+                                />
+                            </div>
+                        )}
 
                         {callKind === 'message' && (
                             <div className="client-type-selection">
@@ -326,18 +413,21 @@ const CallHub: React.FC = () => {
                             </div>
                         )}
 
-                        {(callKind === 'enquiry' || (callKind === 'message' && enquiryType)) && (
+                        {/* Caller Details - Always shown after client/non-client selection */}
+                        {isClient !== null && (
                             <>
                                 <Stack horizontal tokens={{ childrenGap: 8 }}>
                                     <TextField
-                                        label="First Name"
+                                        label="First Name *"
                                         value={firstName}
                                         onChange={(_, v) => setFirstName(v || '')}
+                                        required
                                     />
                                     <TextField
-                                        label="Last Name"
+                                        label="Last Name *"
                                         value={lastName}
                                         onChange={(_, v) => setLastName(v || '')}
+                                        required
                                     />
                                 </Stack>
 
@@ -562,6 +652,22 @@ const CallHub: React.FC = () => {
                     </Stack>
                 </div>
             </div>
+
+            {/* Logic Tree Panel */}
+            <div style={{ flex: '1 1 33%', padding: '16px', border: '1px solid #e0e0e0' }}>
+                <LogicTree 
+                    isClient={isClient}
+                    contactPreference={contactPreference}
+                    relationship={relationship}
+                    areaOfWork={areaOfWork}
+                />
+            </div>
+
+            {/* JSON Preview Panel */}
+            <div style={{ flex: '1 1 33%', padding: '16px', border: '1px solid #e0e0e0' }}>
+                <JsonPreview formData={formData} />
+            </div>
+
             <style>{`
           .client-type-selection {
             display: flex;
