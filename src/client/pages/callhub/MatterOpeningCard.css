@@ -1,7 +1,7 @@
 /* Matter Opening Card Styles */
 .matter-opening-card {
-  background: white;
-  border: 1px solid #e1e1e1;
+  background: var(--section-background, #FFFFFF);
+  border: 1px solid var(--border-color, #F4F4F6);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
