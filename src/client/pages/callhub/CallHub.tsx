@@ -368,7 +368,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'expert' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('expert');
-                                                    setIsClient(false); // Expert = NO
+                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
                                                     setRelationship('expert');
                                                 }}
                                             >
@@ -378,7 +378,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'opposition' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('opposition');
-                                                    setIsClient(false); // Opposition = NO
+                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
                                                     setRelationship('opponent');
                                                 }}
                                             >
@@ -388,7 +388,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'other' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('other');
-                                                    setIsClient(false); // Other = NO
+                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
                                                     setRelationship(null);
                                                 }}
                                             >
@@ -402,10 +402,8 @@ const CallHub: React.FC = () => {
                                                     placeholder="Select relationship..."
                                                     options={[
                                                         { key: 'prospect', text: 'Prospect' },
-                                                        { key: 'opponent', text: 'Opponent' },
                                                         { key: 'opponent-solicitor', text: 'Opponent Solicitor' },
-                                                        { key: 'barrister', text: 'Barrister' },
-                                                        { key: 'expert', text: 'Expert' },
+                                                        { key: 'barrister', text: 'Barrister' },                                                   
                                                         { key: 'other', text: 'Other' },
                                                     ]}
                                                     selectedKey={relationship}
