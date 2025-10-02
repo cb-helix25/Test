@@ -1,12 +1,21 @@
 import React from 'react';
 import { colours } from '../../colours';
-import { ContactPreference } from './types';
 
 interface LogicTreeProps {
-  isClient: boolean | null;
-  contactPreference: ContactPreference | null;
-  relationship: string | null;
-  areaOfWork: string | null;
+  formData: {
+    callKind: string | null;
+    enquiryType: string | null;
+    isClient: boolean | null;
+    contactPreference: string | null;
+    relationship: string | null;
+    areaOfWork: string | null;
+    firstName: string;
+    lastName: string;
+    email: string;
+    contactPhone: string;
+    messageFrom?: string;
+    [key: string]: any;
+  };
 }
 
 interface LogicNode {
@@ -18,12 +27,19 @@ interface LogicNode {
   condition?: string;
 }
 
-export const LogicTree: React.FC<LogicTreeProps> = ({ 
-  isClient, 
-  contactPreference, 
-  relationship, 
-  areaOfWork 
-}) => {
+export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
+  
+  // Extract values from formData (mirrors the JSON structure)
+  const { 
+    callKind, 
+    enquiryType, 
+    isClient, 
+    contactPreference, 
+    relationship, 
+    areaOfWork,
+    firstName,
+    lastName
+  } = formData;
   
   const buildLogicTree = (): LogicNode => {
     return {
@@ -32,66 +48,98 @@ export const LogicTree: React.FC<LogicTreeProps> = ({
       active: true,
       children: [
         {
-          id: 'client-check',
-          label: 'Is this a client?',
-          active: isClient !== null,
-          condition: isClient === null ? 'pending' : isClient ? 'YES' : 'NO',
-          children: [
+          id: 'call-type',
+          label: 'Call Type',
+          active: callKind !== null,
+          condition: callKind || 'pending',
+          children: callKind === 'message' ? [
             {
-              id: 'client-yes',
-              label: 'Client Flow',
-              active: isClient === true,
+              id: 'message-type',
+              label: 'Message Type',
+              active: enquiryType !== null,
+              condition: enquiryType || 'pending',
               children: [
                 {
-                  id: 'contact-pref',
-                  label: 'Contact Preference?',
-                  active: isClient === true && contactPreference !== null,
-                  condition: contactPreference || 'pending',
-                  children: [
-                    {
-                      id: 'email-flow',
-                      label: 'Email Flow',
-                      active: contactPreference === 'email',
-                      action: '📧 Auto-send email + Calendly link\n📢 Teams message to FE'
-                    },
-                    {
-                      id: 'phone-flow',
-                      label: 'Phone Flow', 
-                      active: contactPreference === 'phone',
-                      action: '📱 Auto-send SMS + Calendly link\n📢 Teams message to FE'
-                    }
-                  ]
+                  id: 'message-details',
+                  label: 'Message Details',
+                  active: Boolean(firstName && lastName),
+                  condition: `${firstName} ${lastName}`.trim() || 'pending',
+                  action: enquiryType === 'other' && relationship 
+                    ? `Relationship: ${relationship}` 
+                    : enquiryType === 'existing' 
+                    ? 'Existing client message'
+                    : enquiryType === 'expert'
+                    ? 'Expert message'
+                    : enquiryType === 'opposition'
+                    ? 'Opposition message'
+                    : 'Process message'
                 }
               ]
-            },
+            }
+          ] : callKind === 'enquiry' ? [
             {
-              id: 'client-no',
-              label: 'Non-Client Flow',
-              active: isClient === false,
+              id: 'client-check',
+              label: 'Is this a client?',
+              active: isClient !== null,
+              condition: isClient === null ? 'pending' : isClient ? 'YES' : 'NO',
               children: [
                 {
-                  id: 'relationship-check',
-                  label: 'Relationship with firm?',
-                  active: isClient === false && relationship !== null,
-                  condition: relationship || 'pending',
+                  id: 'client-yes',
+                  label: 'Client Flow',
+                  active: isClient === true,
                   children: [
                     {
-                      id: 'prospect-flow',
-                      label: 'Prospect Flow',
-                      active: relationship === 'prospect',
-                      action: `📧📱 Auto-send email + SMS\n🎯 Hunter card update\n🚨 Alert: ${areaOfWork === 'property' ? 'AC' : areaOfWork === 'construction' ? 'JW' : 'Team'}`
-                    },
+                      id: 'contact-pref',
+                      label: 'Contact Preference?',
+                      active: isClient === true && contactPreference !== null,
+                      condition: contactPreference || 'pending',
+                      children: [
+                        {
+                          id: 'email-flow',
+                          label: 'Email Flow',
+                          active: contactPreference === 'email',
+                          action: '📧 Auto-send email + Calendly link\n📢 Teams message to FE'
+                        },
+                        {
+                          id: 'phone-flow',
+                          label: 'Phone Flow', 
+                          active: contactPreference === 'phone',
+                          action: '📱 Auto-send SMS + Calendly link\n📢 Teams message to FE'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  id: 'client-no',
+                  label: 'Non-Client Flow',
+                  active: isClient === false,
+                  children: [
                     {
-                      id: 'other-flow',
-                      label: 'Other Relationship',
-                      active: Boolean(relationship && relationship !== 'prospect'),
-                      action: '📢 Teams message + email to FE'
+                      id: 'relationship-check',
+                      label: 'Relationship with firm?',
+                      active: isClient === false && relationship !== null,
+                      condition: relationship || 'pending',
+                      children: [
+                        {
+                          id: 'prospect-flow',
+                          label: 'Prospect Flow',
+                          active: relationship === 'prospect',
+                          action: `📧📱 Auto-send email + SMS\n🎯 Hunter card update\n🚨 Alert: ${areaOfWork === 'property' ? 'AC' : areaOfWork === 'construction' ? 'JW' : 'Team'}`
+                        },
+                        {
+                          id: 'other-flow',
+                          label: 'Other Relationship',
+                          active: Boolean(relationship && relationship !== 'prospect'),
+                          action: '📢 Teams message + email to FE'
+                        }
+                      ]
                     }
                   ]
                 }
               ]
             }
-          ]
+          ] : []
         }
       ]
     };
