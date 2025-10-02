@@ -327,7 +327,7 @@ const CallHub: React.FC = () => {
                                     className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
                                     onClick={() => setCallKind('enquiry')}
                                 >
-                                    <span className="client-type-label">New enquiry</span>
+                                    <span className="client-type-label">Enquiry</span>
                                 </div>
                                 <div
                                     className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
@@ -728,17 +728,7 @@ const CallHub: React.FC = () => {
                                     setAbandonTime(null);
                                 }} 
                             />
-                            {callKind && isClient === null && (
-                                <PrimaryButton 
-                                    text="← Back to Call Type" 
-                                    onClick={() => {
-                                        setCallKind(null);
-                                        setEnquiryType(null);
-                                        setIsClient(null);
-                                    }} 
-                                />
-                            )}
-                            <PrimaryButton text="Claim New Enquiry" onClick={handleClaim} disabled={!!claimTime} />
+                            <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
                             <PrimaryButton text="Mark Contacted" onClick={handleContacted} disabled={!claimTime || !!contactTime} />
                             <PrimaryButton
                                 text="Abandon Call"
