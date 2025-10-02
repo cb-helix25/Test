@@ -397,13 +397,30 @@ const CallHub: React.FC = () => {
                                                 onClick={() => {
                                                     setEnquiryType('other');
                                                     setIsClient(false); // Other = NO
-                                                    setRelationship('other');
+                                                    setRelationship(null);
                                                 }}
                                             >
                                                 <span className="client-type-label">Other</span>
                                             </div>
                                         </div>
-
+                                        {enquiryType === 'other' && (
+                                            <div style={{ marginTop: '16px' }}>
+                                                <Dropdown
+                                                    label="What is the relationship to the firm?"
+                                                    placeholder="Select relationship..."
+                                                    options={[
+                                                        { key: 'prospect', text: 'Prospect' },
+                                                        { key: 'opponent', text: 'Opponent' },
+                                                        { key: 'opponent-solicitor', text: 'Opponent Solicitor' },
+                                                        { key: 'barrister', text: 'Barrister' },
+                                                        { key: 'expert', text: 'Expert' },
+                                                        { key: 'other', text: 'Other' },
+                                                    ]}
+                                                    selectedKey={relationship}
+                                                    onChange={(_, option) => setRelationship(option?.key as string)}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -588,12 +605,7 @@ const CallHub: React.FC = () => {
 
                                 {callKind === 'message' && (
                                     <>
-                                        <Dropdown
-                                            label="Who is the message from?"
-                                            options={messageFromOptions}
-                                            selectedKey={messageFrom}
-                                            onChange={(_, o) => setMessageFrom(o?.key as string)}
-                                        />
+
                                         <Dropdown
                                             label="Message for"
                                             options={teamOptions}
