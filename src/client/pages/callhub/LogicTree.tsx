@@ -146,39 +146,45 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
   };
 
   const renderNode = (node: LogicNode, depth: number = 0): React.ReactElement => {
-    const indent = depth * 20;
-    const isExpanded = node.active && node.children && node.children.some(child => child.active);
+    const indent = depth * 15;
+    const isExpanded = node.children && (node.active || node.children.some(child => child.active));
     
     return (
       <div key={node.id} style={{ marginLeft: indent }}>
         <div 
           style={{
-            padding: '8px 12px',
-            margin: '2px 0',
+            padding: '6px 10px',
+            margin: '1px 0',
             borderRadius: '4px',
             backgroundColor: node.active ? colours.highlightBlue : colours.grey,
             border: `1px solid ${node.active ? colours.blue : colours.greyText}`,
             fontWeight: node.active ? 600 : 400,
             color: node.active ? colours.darkBlue : colours.greyText,
-            position: 'relative'
+            position: 'relative',
+            fontSize: '13px'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
             {node.children && (
-              <span style={{ fontSize: '12px' }}>
+              <span style={{ fontSize: '11px', marginTop: '1px', flexShrink: 0 }}>
                 {isExpanded ? '▼' : '▶'}
               </span>
             )}
-            <span>{node.label}</span>
+            <span style={{ flex: 1, minWidth: 0, wordBreak: 'break-word' }}>{node.label}</span>
             {node.condition && (
               <span 
                 style={{
-                  fontSize: '12px',
-                  padding: '2px 6px',
+                  fontSize: '11px',
+                  padding: '1px 4px',
                   borderRadius: '3px',
                   backgroundColor: node.condition === 'pending' ? colours.highlightYellow : colours.highlightBlue,
                   color: colours.darkBlue,
-                  fontWeight: 500
+                  fontWeight: 500,
+                  flexShrink: 0,
+                  maxWidth: '120px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 {node.condition}
@@ -189,13 +195,14 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
           {node.action && node.active && (
             <div 
               style={{
-                marginTop: '8px',
-                padding: '8px',
+                marginTop: '6px',
+                padding: '6px',
                 backgroundColor: colours.highlightNeutral,
                 borderRadius: '3px',
-                fontSize: '12px',
+                fontSize: '11px',
                 whiteSpace: 'pre-line',
-                color: colours.darkBlue
+                color: colours.darkBlue,
+                wordBreak: 'break-word'
               }}
             >
               <strong>Actions:</strong><br />
@@ -205,7 +212,7 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
         </div>
         
         {isExpanded && node.children && (
-          <div>
+          <div style={{ marginTop: '2px' }}>
             {node.children.map(child => renderNode(child, depth + 1))}
           </div>
         )}
