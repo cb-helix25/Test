@@ -30,6 +30,7 @@ const CallHub: React.FC = () => {
     // New logic flow fields
     const [isClient, setIsClient] = useState<boolean | null>(null);
     const [relationship, setRelationship] = useState<string | null>(null);
+    const [initialContactMethod, setInitialContactMethod] = useState<string | null>(null);
     
     // System state
     const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
@@ -285,6 +286,7 @@ const CallHub: React.FC = () => {
     const formData = {
         isClient,
         contactPreference,
+        initialContactMethod,
         relationship,
         firstName,
         lastName,
@@ -297,7 +299,20 @@ const CallHub: React.FC = () => {
         contactTime,
         abandonTime,
         callKind,
-        enquiryType
+        enquiryType,
+        callerCategory,
+        messageFrom,
+        teamMember,
+        ccTeamMember,
+        urgent,
+        urgentReason,
+        valueInDispute,
+        prospectDescription,
+        constructionOrHomeOwner,
+        propertyProfessional,
+        heardAboutUs,
+        searchTerm,
+        webPageVisited
     };
 
     return (
@@ -327,7 +342,7 @@ const CallHub: React.FC = () => {
                                     className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
                                     onClick={() => setCallKind('enquiry')}
                                 >
-                                    <span className="client-type-label">Enquiry</span>
+                                    <span className="client-type-label">New enquiry</span>
                                 </div>
                                 <div
                                     className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
@@ -574,18 +589,23 @@ const CallHub: React.FC = () => {
                                     />
                                 )}
 
-                                <div className="client-type-selection">
-                                    <div
-                                        className={`client-type-icon-btn${contactPreference === 'email' ? ' active' : ''}`}
-                                        onClick={() => setContactPreference('email')}
-                                    >
-                                        <span className="client-type-label">Email</span>
-                                    </div>
-                                    <div
-                                        className={`client-type-icon-btn${contactPreference === 'phone' ? ' active' : ''}`}
-                                        onClick={() => setContactPreference('phone')}
-                                    >
-                                        <span className="client-type-label">Phone</span>
+                                <div>
+                                    <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                        How did they initially contact us?
+                                    </label>
+                                    <div className="client-type-selection">
+                                        <div
+                                            className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
+                                            onClick={() => setInitialContactMethod('email')}
+                                        >
+                                            <span className="client-type-label">Email</span>
+                                        </div>
+                                        <div
+                                            className={`client-type-icon-btn${initialContactMethod === 'phone' ? ' active' : ''}`}
+                                            onClick={() => setInitialContactMethod('phone')}
+                                        >
+                                            <span className="client-type-label">Phone</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -717,6 +737,7 @@ const CallHub: React.FC = () => {
                                     setContactPreference(null);
                                     setRelationship(null);
                                     setEnquiryType(null);
+                                    setInitialContactMethod(null);
                                     setFirstName('');
                                     setLastName('');
                                     setEmail('');
