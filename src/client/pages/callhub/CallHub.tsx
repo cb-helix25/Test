@@ -81,14 +81,6 @@ const CallHub: React.FC = () => {
         { key: 'other', text: 'Unsure/Other' },
     ];
 
-    const messageFromOptions: IDropdownOption[] = [
-        { key: 'client', text: 'Client' },
-        { key: 'opponent', text: 'Opponent' },
-        { key: 'court', text: 'Court' },
-        { key: 'other', text: 'Other' },
-        { key: 'uncertain', text: 'Uncertain' },
-    ];
-
     const teamOptions: IDropdownOption[] = [
         { key: 'Alex Cook', text: 'Alex Cook' },
         { key: "Bianca O'Donnell", text: "Bianca O'Donnell" },
