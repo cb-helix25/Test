@@ -553,25 +553,27 @@ const CallHub: React.FC = () => {
                                     />
                                 )}
 
-                                <div>
-                                    <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                        How did they initially contact us?
-                                    </label>
-                                    <div className="client-type-selection">
-                                        <div
-                                            className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
-                                            onClick={() => setInitialContactMethod('email')}
-                                        >
-                                            <span className="client-type-label">Email</span>
-                                        </div>
-                                        <div
-                                            className={`client-type-icon-btn${initialContactMethod === 'phone' ? ' active' : ''}`}
-                                            onClick={() => setInitialContactMethod('phone')}
-                                        >
-                                            <span className="client-type-label">Phone</span>
+                                {callKind === 'enquiry' && (
+                                    <div>
+                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                            How did they initially contact us?
+                                        </label>
+                                        <div className="client-type-selection">
+                                            <div
+                                                className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
+                                                onClick={() => setInitialContactMethod('email')}
+                                            >
+                                                <span className="client-type-label">Email</span>
+                                            </div>
+                                            <div
+                                                className={`client-type-icon-btn${initialContactMethod === 'phone' ? ' active' : ''}`}
+                                                onClick={() => setInitialContactMethod('phone')}
+                                            >
+                                                <span className="client-type-label">Phone</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {missingEmail && (
                                     <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
