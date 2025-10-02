@@ -3,19 +3,46 @@ import { colours } from '../../colours';
 
 interface JsonPreviewProps {
   formData: {
+    // Core call data
+    callKind: string | null;
+    enquiryType: string | null;
     isClient: boolean | null;
     contactPreference: string | null;
     relationship: string | null;
+    
+    // Caller details
     firstName: string;
     lastName: string;
     email: string;
     contactPhone: string;
     countryCode: string;
+    callerCategory?: string;
+    
+    // Message fields
+    messageFrom?: string;
+    teamMember?: string;
+    ccTeamMember?: string;
+    urgent?: boolean;
+    urgentReason?: string;
+    
+    // Enquiry fields
     areaOfWork: string | null;
+    valueInDispute?: string;
+    prospectDescription?: string;
+    constructionOrHomeOwner?: string;
+    propertyProfessional?: string;
+    heardAboutUs?: string;
+    searchTerm?: string;
+    webPageVisited?: string;
+    
+    // General
     notes: string;
+    
+    // Tracking
     claimTime: number | null;
     contactTime: number | null;
     abandonTime: number | null;
+    
     [key: string]: any;
   };
 }
@@ -25,23 +52,57 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
   const buildPayload = () => {
     const payload: any = {
       timestamp: Date.now(),
-      callType: formData.isClient === true ? 'client' : formData.isClient === false ? 'non-client' : 'unknown',
+      callType: formData.callKind || 'unknown',
+      enquiryType: formData.enquiryType,
+      
+      // Caller Information
       caller: {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         phone: `${formData.countryCode}${formData.contactPhone}`,
+        category: formData.callerCategory,
       },
+      
+      // Workflow Logic
       workflow: {
         isClient: formData.isClient,
         contactPreference: formData.contactPreference,
         relationship: formData.relationship,
       },
-      caseDetails: {
-        areaOfWork: formData.areaOfWork,
-        notes: formData.notes,
-      },
+      
+      // Message Details (for messages)
+      ...(formData.callKind === 'message' && {
+        messageDetails: {
+          messageFrom: formData.messageFrom,
+          teamMember: formData.teamMember,
+          ccTeamMember: formData.ccTeamMember,
+          urgent: formData.urgent,
+          urgentReason: formData.urgent ? formData.urgentReason : null,
+        }
+      }),
+      
+      // Enquiry Details (for enquiries)
+      ...(formData.callKind === 'enquiry' && {
+        enquiryDetails: {
+          areaOfWork: formData.areaOfWork,
+          valueInDispute: formData.valueInDispute,
+          prospectDescription: formData.prospectDescription,
+          constructionOrHomeOwner: formData.constructionOrHomeOwner,
+          propertyProfessional: formData.propertyProfessional,
+          heardAboutUs: formData.heardAboutUs,
+          searchTerm: formData.searchTerm,
+          webPageVisited: formData.webPageVisited,
+        }
+      }),
+      
+      // General Details
+      notes: formData.notes,
+      
+      // System Actions
       actions: buildActions(),
+      
+      // Tracking Information
       tracking: {
         claimTime: formData.claimTime,
         contactTime: formData.contactTime,
