@@ -368,7 +368,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'expert' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('expert');
-                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
+                                                    setIsClient(false); // Expert = NO
                                                     setRelationship('expert');
                                                 }}
                                             >
@@ -378,7 +378,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'opposition' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('opposition');
-                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
+                                                    setIsClient(false); // Opposition = NO
                                                     setRelationship('opponent');
                                                 }}
                                             >
@@ -388,7 +388,7 @@ const CallHub: React.FC = () => {
                                                 className={`client-type-icon-btn${enquiryType === 'other' ? ' active' : ''}`}
                                                 onClick={() => {
                                                     setEnquiryType('other');
-                                                    setIsClient(null); // Don't trigger enquiry relationship dropdown
+                                                    setIsClient(false); // Other = NO
                                                     setRelationship(null);
                                                 }}
                                             >
@@ -469,8 +469,8 @@ const CallHub: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Non-Client Flow: Relationship */}
-                        {isClient === false && (
+                        {/* Non-Client Flow: Relationship - Only for enquiries, not messages */}
+                        {isClient === false && callKind === 'enquiry' && (
                             <div>
                                 <Dropdown
                                     label="What is the relationship with the firm? *"
