@@ -327,13 +327,13 @@ const CallHub: React.FC = () => {
                                     className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
                                     onClick={() => setCallKind('enquiry')}
                                 >
-                                    <span className="client-type-label">Enquiry</span>
+                                    <span className="client-type-label">New enquiry</span>
                                 </div>
                                 <div
                                     className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
                                     onClick={() => setCallKind('message')}
                                 >
-                                    <span className="client-type-label">Message</span>
+                                    <span className="client-type-label">Tel message</span>
                                 </div>
                             </div>
                         </div>
@@ -388,6 +388,27 @@ const CallHub: React.FC = () => {
                                                 <span className="client-type-label">Other</span>
                                             </div>
                                         </div>
+                                        {enquiryType && (
+                                            <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                                                <button 
+                                                    style={{ 
+                                                        background: 'none', 
+                                                        border: 'none', 
+                                                        color: '#3690CE', 
+                                                        textDecoration: 'underline', 
+                                                        cursor: 'pointer',
+                                                        fontSize: '12px'
+                                                    }}
+                                                    onClick={() => {
+                                                        setEnquiryType(null);
+                                                        setIsClient(null);
+                                                        setRelationship(null);
+                                                    }}
+                                                >
+                                                    Change message type
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -419,6 +440,23 @@ const CallHub: React.FC = () => {
                                                 <span className="client-type-label">No</span>
                                             </div>
                                         </div>
+                                        {isClient !== null && (
+                                            <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                                                <button 
+                                                    style={{ 
+                                                        background: 'none', 
+                                                        border: 'none', 
+                                                        color: '#3690CE', 
+                                                        textDecoration: 'underline', 
+                                                        cursor: 'pointer',
+                                                        fontSize: '12px'
+                                                    }}
+                                                    onClick={() => setIsClient(null)}
+                                                >
+                                                    Change selection
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -671,7 +709,36 @@ const CallHub: React.FC = () => {
                         )}
 
                         <Stack horizontal tokens={{ childrenGap: 10 }}>
-                            <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
+                            <PrimaryButton 
+                                text="Reset Form" 
+                                onClick={() => {
+                                    setCallKind(null);
+                                    setIsClient(null);
+                                    setContactPreference(null);
+                                    setRelationship(null);
+                                    setEnquiryType(null);
+                                    setFirstName('');
+                                    setLastName('');
+                                    setEmail('');
+                                    setContactPhone('');
+                                    setNotes('');
+                                    setAreaOfWork(undefined);
+                                    setClaimTime(null);
+                                    setContactTime(null);
+                                    setAbandonTime(null);
+                                }} 
+                            />
+                            {callKind && isClient === null && (
+                                <PrimaryButton 
+                                    text="← Back to Call Type" 
+                                    onClick={() => {
+                                        setCallKind(null);
+                                        setEnquiryType(null);
+                                        setIsClient(null);
+                                    }} 
+                                />
+                            )}
+                            <PrimaryButton text="Claim New Enquiry" onClick={handleClaim} disabled={!!claimTime} />
                             <PrimaryButton text="Mark Contacted" onClick={handleContacted} disabled={!claimTime || !!contactTime} />
                             <PrimaryButton
                                 text="Abandon Call"
