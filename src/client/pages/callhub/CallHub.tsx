@@ -403,27 +403,7 @@ const CallHub: React.FC = () => {
                                                 <span className="client-type-label">Other</span>
                                             </div>
                                         </div>
-                                        {enquiryType && (
-                                            <div style={{ marginTop: '8px', textAlign: 'center' }}>
-                                                <button 
-                                                    style={{ 
-                                                        background: 'none', 
-                                                        border: 'none', 
-                                                        color: '#3690CE', 
-                                                        textDecoration: 'underline', 
-                                                        cursor: 'pointer',
-                                                        fontSize: '12px'
-                                                    }}
-                                                    onClick={() => {
-                                                        setEnquiryType(null);
-                                                        setIsClient(null);
-                                                        setRelationship(null);
-                                                    }}
-                                                >
-                                                    Change message type
-                                                </button>
-                                            </div>
-                                        )}
+
                                     </div>
                                 )}
 
@@ -455,23 +435,7 @@ const CallHub: React.FC = () => {
                                                 <span className="client-type-label">No</span>
                                             </div>
                                         </div>
-                                        {isClient !== null && (
-                                            <div style={{ marginTop: '8px', textAlign: 'center' }}>
-                                                <button 
-                                                    style={{ 
-                                                        background: 'none', 
-                                                        border: 'none', 
-                                                        color: '#3690CE', 
-                                                        textDecoration: 'underline', 
-                                                        cursor: 'pointer',
-                                                        fontSize: '12px'
-                                                    }}
-                                                    onClick={() => setIsClient(null)}
-                                                >
-                                                    Change selection
-                                                </button>
-                                            </div>
-                                        )}
+
                                     </div>
                                 )}
 
@@ -733,20 +697,39 @@ const CallHub: React.FC = () => {
                                 text="Reset Form" 
                                 onClick={() => {
                                     setCallKind(null);
-                                    setIsClient(null);
-                                    setContactPreference(null);
-                                    setRelationship(null);
                                     setEnquiryType(null);
-                                    setInitialContactMethod(null);
-                                    setFirstName('');
-                                    setLastName('');
+                                    setContactPreference(null);
                                     setEmail('');
                                     setContactPhone('');
+                                    setFirstName('');
+                                    setLastName('');
                                     setNotes('');
-                                    setAreaOfWork(undefined);
+                                    setCountryCode('+44');
+                                    setIsClient(null);
+                                    setRelationship(null);
+                                    setInitialContactMethod(null);
+                                    setClientInfo(null);
+                                    setLookupStatus(null);
                                     setClaimTime(null);
                                     setContactTime(null);
                                     setAbandonTime(null);
+                                    setSaving(false);
+                                    setSaveError(null);
+                                    setSaveSuccess(false);
+                                    setTeamMember(undefined);
+                                    setCcTeamMember('');
+                                    setUrgent(false);
+                                    setUrgentReason('');
+                                    setCallerCategory(undefined);
+                                    setMessageFrom(undefined);
+                                    setAreaOfWork(undefined);
+                                    setValueInDispute(undefined);
+                                    setProspectDescription(undefined);
+                                    setConstructionOrHomeOwner(undefined);
+                                    setPropertyProfessional(undefined);
+                                    setHeardAboutUs(undefined);
+                                    setSearchTerm('');
+                                    setWebPageVisited('');
                                 }} 
                             />
                             <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
