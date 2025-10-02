@@ -338,36 +338,89 @@ const CallHub: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Primary Question: Is this a client? */}
                         {callKind && (
                             <>
-                            <div>
-                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                    Is this a client? *
-                                </label>
-                            <div className="client-type-selection">
-                                <div
-                                    className={`client-type-icon-btn${isClient === true ? ' active' : ''}`}
-                                    onClick={() => {
-                                        setIsClient(true);
-                                        setRelationship(null);
-                                        setContactPreference(null);
-                                    }}
-                                >
-                                    <span className="client-type-label">Yes</span>
-                                </div>
-                                <div
-                                    className={`client-type-icon-btn${isClient === false ? ' active' : ''}`}
-                                    onClick={() => {
-                                        setIsClient(false);
-                                        setContactPreference(null);
-                                        setRelationship(null);
-                                    }}
-                                >
-                                    <span className="client-type-label">No</span>
-                                </div>
-                            </div>
-                        </div>
+                                {/* Message Type Selection */}
+                                {callKind === 'message' && (
+                                    <div>
+                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                            What type of message is this? *
+                                        </label>
+                                        <div className="client-type-selection" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                            <div
+                                                className={`client-type-icon-btn${enquiryType === 'existing' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setEnquiryType('existing');
+                                                    setIsClient(true); // Existing client = YES
+                                                    setRelationship(null);
+                                                }}
+                                            >
+                                                <span className="client-type-label">Existing Client</span>
+                                            </div>
+                                            <div
+                                                className={`client-type-icon-btn${enquiryType === 'expert' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setEnquiryType('expert');
+                                                    setIsClient(false); // Expert = NO
+                                                    setRelationship('expert');
+                                                }}
+                                            >
+                                                <span className="client-type-label">Expert</span>
+                                            </div>
+                                            <div
+                                                className={`client-type-icon-btn${enquiryType === 'opposition' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setEnquiryType('opposition');
+                                                    setIsClient(false); // Opposition = NO
+                                                    setRelationship('opponent');
+                                                }}
+                                            >
+                                                <span className="client-type-label">Opposition</span>
+                                            </div>
+                                            <div
+                                                className={`client-type-icon-btn${enquiryType === 'other' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setEnquiryType('other');
+                                                    setIsClient(false); // Other = NO
+                                                    setRelationship('other');
+                                                }}
+                                            >
+                                                <span className="client-type-label">Other</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Enquiry Flow: Is this a client? */}
+                                {callKind === 'enquiry' && (
+                                    <div>
+                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                            Is this a client? *
+                                        </label>
+                                        <div className="client-type-selection">
+                                            <div
+                                                className={`client-type-icon-btn${isClient === true ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setIsClient(true);
+                                                    setRelationship(null);
+                                                    setContactPreference(null);
+                                                }}
+                                            >
+                                                <span className="client-type-label">Yes</span>
+                                            </div>
+                                            <div
+                                                className={`client-type-icon-btn${isClient === false ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    setIsClient(false);
+                                                    setContactPreference(null);
+                                                    setRelationship(null);
+                                                }}
+                                            >
+                                                <span className="client-type-label">No</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                         {/* Client Flow: Contact Preference */}
                         {isClient === true && (
@@ -409,29 +462,6 @@ const CallHub: React.FC = () => {
                                     selectedKey={relationship}
                                     onChange={(_, option) => setRelationship(option?.key as string)}
                                 />
-                            </div>
-                        )}
-
-                        {callKind === 'message' && (
-                            <div className="client-type-selection">
-                                <div
-                                    className={`client-type-icon-btn${enquiryType === 'existing' ? ' active' : ''}`}
-                                    onClick={() => setEnquiryType('existing')}
-                                >
-                                    <span className="client-type-label">Existing Client</span>
-                                </div>
-                                <div
-                                    className={`client-type-icon-btn${enquiryType === 'expert' ? ' active' : ''}`}
-                                    onClick={() => setEnquiryType('expert')}
-                                >
-                                    <span className="client-type-label">Expert</span>
-                                </div>
-                                <div
-                                    className={`client-type-icon-btn${enquiryType === 'other' ? ' active' : ''}`}
-                                    onClick={() => setEnquiryType('other')}
-                                >
-                                    <span className="client-type-label">Other</span>
-                                </div>
                             </div>
                         )}
 

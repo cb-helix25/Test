@@ -16,6 +16,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "colours.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
