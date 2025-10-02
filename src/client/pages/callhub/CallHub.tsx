@@ -774,12 +774,7 @@ const CallHub: React.FC = () => {
 
             {/* Logic Tree Panel */}
             <div style={{ flex: '1 1 33%', padding: '16px', border: '1px solid #e0e0e0' }}>
-                <LogicTree 
-                    isClient={isClient}
-                    contactPreference={contactPreference}
-                    relationship={relationship}
-                    areaOfWork={areaOfWork || null}
-                />
+                <LogicTree formData={formData} />
             </div>
 
             {/* JSON Preview Panel */}
