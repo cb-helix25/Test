@@ -8,6 +8,7 @@ import {
     Dropdown,
     IDropdownOption,
     Checkbox,
+    Label,
 } from '@fluentui/react';
 import './MatterOpeningCard.css';
 import { sendCallEvent, lookupClient } from './CallHubApi.mock';
@@ -412,14 +413,7 @@ const CallHub: React.FC = () => {
     };
 
     return (
-        <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 500px 450px',
-            gap: '20px',
-            padding: '20px',
-            maxWidth: '1800px',
-            margin: '0 auto'
-        }}>
+        <div className="callhub-layout">
             {/* Main Form */}
             <div className="matter-opening-card">
                 <div className="step-header active">
@@ -430,9 +424,9 @@ const CallHub: React.FC = () => {
                         
                         {/* Call Type Selection */}
                         <div>
-                            <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                What type of call is this? *
-                            </label>
+                            <Label required>
+                                What type of call is this?
+                            </Label>
                             <div className="client-type-selection">
                                 <div
                                     className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
@@ -454,10 +448,10 @@ const CallHub: React.FC = () => {
                                 {/* Message Type Selection */}
                                 {callKind === 'message' && (
                                     <div>
-                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                            What type of message is this? *
-                                        </label>
-                                        <div className="client-type-selection" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                        <Label required>
+                                            What type of message is this?
+                                        </Label>
+                                        <div className="client-type-selection message-type-grid">
                                             <div
                                                 className={`client-type-icon-btn${enquiryType === 'existing' ? ' active' : ''}`}
                                                 onClick={() => {
@@ -521,9 +515,9 @@ const CallHub: React.FC = () => {
                                 {/* Enquiry Flow: Is this a client? */}
                                 {callKind === 'enquiry' && (
                                     <div>
-                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                            Is this a client? *
-                                        </label>
+                                        <Label required>
+                                            Is this a client?
+                                        </Label>
                                         <div className="client-type-selection">
                                             <div
                                                 className={`client-type-icon-btn${isClient === true ? ' active' : ''}`}
@@ -553,9 +547,9 @@ const CallHub: React.FC = () => {
                         {/* Separate Matter Gate for Existing Clients */}
                         {callKind === 'enquiry' && isClient === true && (
                             <div>
-                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                    Is this about a new/separate matter? *
-                                </label>
+                                <Label required>
+                                    Is this about a new/separate matter?
+                                </Label>
                                 <div className="client-type-selection">
                                     <div
                                         className={`client-type-icon-btn${isSeparateMatter === true ? ' active' : ''}`}
@@ -595,9 +589,9 @@ const CallHub: React.FC = () => {
                         {/* Client Flow: Contact Preference - Only for new matters */}
                         {callKind === 'enquiry' && isClient === true && isSeparateMatter === true && (
                             <div>
-                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
-                                    Do you prefer contact by email or phone? *
-                                </label>
+                                <Label required>
+                                    Do you prefer contact by email or phone?
+                                </Label>
                                 <div className="client-type-selection">
                                     <div
                                         className={`client-type-icon-btn${contactPreference === 'email' ? ' active' : ''}`}
@@ -708,9 +702,9 @@ const CallHub: React.FC = () => {
 
                                 {callKind === 'enquiry' && (
                                     <div>
-                                        <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                        <Label>
                                             How did they initially contact us?
-                                        </label>
+                                        </Label>
                                         <div className="client-type-selection">
                                             <div
                                                 className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
@@ -1009,8 +1003,30 @@ const CallHub: React.FC = () => {
             </div>
 
             <style>{`
+          .callhub-layout {
+            display: grid;
+            grid-template-columns: 1fr 500px 450px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+          }
+          
+          @media (max-width: 1400px) {
+            .callhub-layout {
+              grid-template-columns: 1fr;
+              max-width: 800px;
+            }
+          }
+          
           .client-type-selection {
             display: flex;
+            gap: 8px;
+          }
+          
+          .message-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
           }
           .client-type-icon-btn {
