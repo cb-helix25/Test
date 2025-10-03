@@ -51,13 +51,37 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
       ...(formData.callKind === 'enquiry' && {
         enquiryDetails: {
           areaOfWork: formData.areaOfWork,
-          valueInDispute: formData.valueInDispute,
-          prospectDescription: formData.prospectDescription,
-          constructionOrHomeOwner: formData.constructionOrHomeOwner,
-          propertyProfessional: formData.propertyProfessional,
           heardAboutUs: formData.heardAboutUs,
           searchTerm: formData.searchTerm,
           webPageVisited: formData.webPageVisited,
+          briefSummary: formData.briefSummary,
+          // Area-specific details
+          ...(formData.areaOfWork === 'property' && {
+            propertyDetails: {
+              description: formData.propertyDescription,
+              value: formData.propertyValue,
+              interest: formData.propertyInterest
+            }
+          }),
+          ...(formData.areaOfWork === 'employment' && {
+            employmentDetails: {
+              description: formData.employmentDescription
+            }
+          }),
+          ...(formData.areaOfWork === 'construction' && {
+            constructionDetails: {
+              description: formData.constructionDescription,
+              value: formData.constructionValue,
+              adjudication: formData.adjudicationEnquiry
+            }
+          }),
+          ...(formData.areaOfWork === 'commercial' && {
+            commercialDetails: {
+              value: formData.commercialValue,
+              description: formData.commercialDescription,
+              urgentAssistance: formData.urgentAssistance
+            }
+          })
         }
       }),
       
