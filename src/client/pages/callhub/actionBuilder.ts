@@ -51,6 +51,10 @@ export interface FormData {
   webPageVisited: string;
   briefSummary: string;
   
+  // Workflow gate fields
+  isSeparateMatter: boolean | null;
+  autoReroutedFromClientEnquiry: boolean;
+  
   // Area-specific enquiry fields
   propertyDescription?: string;
   propertyValue?: string;
@@ -66,6 +70,70 @@ export interface FormData {
 
 export const buildActions = (formData: FormData): ActionStep[] => {
   const actions: ActionStep[] = [];
+  
+  // Handle rerouted client enquiries (existing client, existing matter)
+  if (formData.isClient === true && formData.isSeparateMatter === false && formData.autoReroutedFromClientEnquiry) {
+    const hasClaimTime = formData.claimTime !== null;
+    const hasTeamMember = Boolean(formData.teamMember);
+    
+    actions.push({
+      id: 'enquiry_reclassified',
+      description: 'Client enquiry reclassified as telephone message',
+      trigger: 'Existing client calling about existing matter',
+      status: 'complete',
+      data: {
+        originalCallKind: 'enquiry',
+        reclassifiedAs: 'message',
+        reason: 'existing_client_existing_matter'
+      }
+    });
+    
+    // Add the same PA workflow steps as regular messages
+    actions.push({
+      id: 'activate_pa',
+      description: 'Activate PA (Power Automate) system',
+      trigger: 'Fires when "Claim Enquiry" is clicked',
+      status: hasClaimTime ? 'complete' : 'pending'
+    });
+    
+    actions.push({
+      id: 'pa_receive_http_request',
+      description: 'PA (Power Automate) receives HTTP request with call data',
+      trigger: 'Immediate after PA activation',
+      status: hasClaimTime ? 'complete' : 'pending'
+    });
+    
+    actions.push({
+      id: 'pa_parse_payload',
+      description: 'PA (Power Automate) parses JSON payload and extracts message details',
+      trigger: 'After HTTP request received',
+      status: hasClaimTime ? 'complete' : 'pending',
+      data: {
+        recipient: formData.teamMember || 'NOT_SELECTED',
+        cc: formData.ccTeamMember || null,
+        urgent: formData.urgent || false,
+        urgencyReason: formData.urgent ? formData.urgentReason : null,
+        rerouted: true
+      }
+    });
+    
+    actions.push({
+      id: 'pa_send_email',
+      description: `Send email to ${formData.teamMember || '[MISSING RECIPIENT]'}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''} [REROUTED FROM ENQUIRY]`,
+      trigger: 'After payload parsing complete',
+      status: hasClaimTime && hasTeamMember ? 'complete' : 'pending',
+      data: {
+        to: formData.teamMember,
+        cc: formData.ccTeamMember,
+        urgent: formData.urgent,
+        subject: `[EXISTING MATTER] ${formData.urgent ? 'URGENT: ' : ''}Message from ${formData.firstName} ${formData.lastName}`,
+        validated: hasTeamMember,
+        rerouted: true
+      }
+    });
+    
+    return actions;
+  }
   
   if (formData.callKind === 'message') {
     // Telephone message workflow - PA integration
