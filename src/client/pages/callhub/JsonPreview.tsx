@@ -1,50 +1,9 @@
 import React from 'react';
 import { colours } from '../../colours';
+import { buildActions, type FormData } from './actionBuilder';
 
 interface JsonPreviewProps {
-  formData: {
-    // Core call data
-    callKind: string | null;
-    enquiryType: string | null;
-    isClient: boolean | null;
-    contactPreference: string | null;
-    relationship: string | null;
-    
-    // Caller details
-    firstName: string;
-    lastName: string;
-    email: string;
-    contactPhone: string;
-    countryCode: string;
-    callerCategory?: string;
-    
-    // Message fields
-    messageFrom?: string;
-    teamMember?: string;
-    ccTeamMember?: string;
-    urgent?: boolean;
-    urgentReason?: string;
-    
-    // Enquiry fields
-    areaOfWork: string | null;
-    valueInDispute?: string;
-    prospectDescription?: string;
-    constructionOrHomeOwner?: string;
-    propertyProfessional?: string;
-    heardAboutUs?: string;
-    searchTerm?: string;
-    webPageVisited?: string;
-    
-    // General
-    notes: string;
-    
-    // Tracking
-    claimTime: number | null;
-    contactTime: number | null;
-    abandonTime: number | null;
-    
-    [key: string]: any;
-  };
+  formData: FormData;
 }
 
 export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
@@ -100,7 +59,7 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
       notes: formData.notes,
       
       // System Actions
-      actions: buildActions(),
+      actions: actionSteps,
       
       // Tracking Information
       tracking: {
@@ -113,37 +72,8 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
     return payload;
   };
 
-  const buildActions = () => {
-    const actions: string[] = [];
-    
-    if (formData.isClient === true) {
-      if (formData.contactPreference === 'email') {
-        actions.push('send_email_with_calendly');
-        actions.push('send_teams_message_to_fe');
-      } else if (formData.contactPreference === 'phone') {
-        actions.push('send_sms_with_calendly');
-        actions.push('send_teams_message_to_fe');
-      }
-    } else if (formData.isClient === false) {
-      if (formData.relationship === 'prospect') {
-        actions.push('send_email_and_sms');
-        actions.push('create_hunter_card');
-        
-        if (formData.areaOfWork === 'property') {
-          actions.push('alert_ac');
-        } else if (formData.areaOfWork === 'construction') {
-          actions.push('alert_jw');
-        } else {
-          actions.push('alert_team');
-        }
-      } else {
-        actions.push('send_teams_message_to_fe');
-        actions.push('send_email_to_fe');
-      }
-    }
-    
-    return actions;
-  };
+  // Get actions from shared builder
+  const actionSteps = buildActions(formData);
 
   const payload = buildPayload();
 
@@ -189,9 +119,22 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
       }}>
         <strong>Actions to execute:</strong>
         <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-          {payload.actions.map((action: string, index: number) => (
-            <li key={index} style={{ color: colours.darkBlue }}>
-              {action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          {payload.actions.map((action: any, index: number) => (
+            <li key={index} style={{ color: colours.darkBlue, marginBottom: '4px' }}>
+              <div style={{ fontWeight: 600 }}>{action.description}</div>
+              {action.trigger && (
+                <div style={{ fontSize: '11px', fontStyle: 'italic', marginTop: '2px' }}>
+                  ↳ {action.trigger}
+                </div>
+              )}
+              <div style={{ 
+                fontSize: '10px', 
+                color: action.status === 'pending' ? '#d13438' : action.status === 'complete' ? '#107c10' : '#605e5c',
+                fontWeight: 500,
+                marginTop: '2px'
+              }}>
+                [{action.status.toUpperCase()}]
+              </div>
             </li>
           ))}
         </ul>
