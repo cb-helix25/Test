@@ -310,10 +310,10 @@ const CallHub: React.FC = () => {
     return (
         <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: '1fr 450px 350px',
+            gridTemplateColumns: '1fr 500px 450px',
             gap: '20px',
             padding: '20px',
-            maxWidth: '1500px',
+            maxWidth: '1800px',
             margin: '0 auto'
         }}>
             {/* Main Form */}
