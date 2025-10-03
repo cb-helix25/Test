@@ -31,6 +31,8 @@ const CallHub: React.FC = () => {
     const [isClient, setIsClient] = useState<boolean | null>(null);
     const [relationship, setRelationship] = useState<string | null>(null);
     const [initialContactMethod, setInitialContactMethod] = useState<string | null>(null);
+    const [isSeparateMatter, setIsSeparateMatter] = useState<boolean | null>(null);
+    const [autoReroutedFromClientEnquiry, setAutoReroutedFromClientEnquiry] = useState(false);
     
     // System state
     const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
@@ -73,6 +75,20 @@ const CallHub: React.FC = () => {
             setLookupStatus(null);
         }
     }, [callKind, enquiryType]);
+
+    // Reset separate matter flag when call kind changes
+    useEffect(() => {
+        setIsSeparateMatter(null);
+        setAutoReroutedFromClientEnquiry(false);
+    }, [callKind]);
+
+    // Helper function to convert client enquiry to message
+    const convertClientEnquiryToMessage = () => {
+        setCallKind('message');
+        setEnquiryType('existing');
+        setAutoReroutedFromClientEnquiry(true);
+        setContactPreference(null); // Reset contact preference since it's message flow now
+    };
 
     const countryCodeOptions: IDropdownOption[] = [
         { key: '+44', text: '+44' },
@@ -358,6 +374,9 @@ const CallHub: React.FC = () => {
         searchTerm,
         webPageVisited,
         briefSummary,
+        // Workflow gate fields
+        isSeparateMatter,
+        autoReroutedFromClientEnquiry,
         // Area-specific fields
         propertyDescription,
         propertyValue,
@@ -511,8 +530,50 @@ const CallHub: React.FC = () => {
                                     </div>
                                 )}
 
-                        {/* Client Flow: Contact Preference */}
-                        {isClient === true && (
+                        {/* Separate Matter Gate for Existing Clients */}
+                        {callKind === 'enquiry' && isClient === true && (
+                            <div>
+                                <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
+                                    Is this about a new/separate matter? *
+                                </label>
+                                <div className="client-type-selection">
+                                    <div
+                                        className={`client-type-icon-btn${isSeparateMatter === true ? ' active' : ''}`}
+                                        onClick={() => {
+                                            setIsSeparateMatter(true);
+                                            setContactPreference(null); // Reset for new enquiry flow
+                                        }}
+                                    >
+                                        <span className="client-type-label">Yes - New Matter</span>
+                                    </div>
+                                    <div
+                                        className={`client-type-icon-btn${isSeparateMatter === false ? ' active' : ''}`}
+                                        onClick={() => {
+                                            setIsSeparateMatter(false);
+                                            convertClientEnquiryToMessage();
+                                        }}
+                                    >
+                                        <span className="client-type-label">No - Existing Matter</span>
+                                    </div>
+                                </div>
+                                {isSeparateMatter === false && (
+                                    <div style={{ 
+                                        marginTop: '12px', 
+                                        padding: '8px', 
+                                        backgroundColor: '#fff4e6', 
+                                        border: '1px solid #d6ac00',
+                                        borderRadius: '4px',
+                                        fontSize: '14px',
+                                        color: '#8a6d00'
+                                    }}>
+                                        📞 <strong>Reclassified:</strong> This enquiry has been automatically converted to a telephone message workflow for existing client matters.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Client Flow: Contact Preference - Only for new matters */}
+                        {callKind === 'enquiry' && isClient === true && isSeparateMatter === true && (
                             <div>
                                 <label style={{ fontWeight: 600, marginBottom: '8px', display: 'block' }}>
                                     Do you prefer contact by email or phone? *
@@ -554,8 +615,8 @@ const CallHub: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Caller Details - Always shown after client/non-client selection */}
-                        {isClient !== null && (
+                        {/* Caller Details - Always shown after client/non-client selection or auto-reroute */}
+                        {(isClient !== null || autoReroutedFromClientEnquiry) && (
                             <>
                                 <Stack horizontal tokens={{ childrenGap: 8 }}>
                                     <TextField
@@ -876,6 +937,9 @@ const CallHub: React.FC = () => {
                                     setCommercialValue(undefined);
                                     setCommercialDescription(undefined);
                                     setUrgentAssistance(undefined);
+                                    // Reset workflow gate fields
+                                    setIsSeparateMatter(null);
+                                    setAutoReroutedFromClientEnquiry(false);
                                 }} 
                             />
                             <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
