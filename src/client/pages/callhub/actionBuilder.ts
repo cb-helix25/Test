@@ -200,7 +200,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     
     actions.push({
       id: 'pa_send_email',
-      description: `Send comprehensive telephone message email to ${formData.teamMember || '[MISSING RECIPIENT]'}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT PRIORITY]' : ''}. Email includes complete caller context, message details, contact information, urgency assessment, and recommended response timeframe. System automatically formats message with caller verification status, relationship to firm, and suggested follow-up actions based on message type and urgency level.`,
+      description: `Send email to ${formData.teamMember || '[MISSING RECIPIENT]'}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''}`,
       trigger: 'After payload parsing complete',
       status: hasClaimTime && hasTeamMember ? 'complete' : 'pending',
       data: {
@@ -218,7 +218,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
       if (formData.contactPreference === 'email') {
         actions.push({
           id: 'send_email_with_calendly',
-          description: 'Send personalized email to existing client with Calendly booking link for appointment scheduling. Email includes client reference, matter details lookup from database, and direct calendar integration for immediate booking. System automatically tracks email delivery and booking confirmation.',
+          description: 'Send email with Calendly booking link',
           status: 'active',
           trigger: 'Immediate - within 2 minutes of call completion',
           data: {
@@ -229,7 +229,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         });
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send Microsoft Teams notification to assigned fee earner with client context, call summary, area of work, and booking alert. Includes direct links to client file, recent matter activity, and calendar availability. Fee earner receives desktop and mobile notifications with one-click access to all relevant information.',
+          description: 'Send Teams notification to fee earner',
           status: 'active',
           trigger: 'Immediate - parallel with client email',
           data: {
@@ -242,7 +242,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
       } else if (formData.contactPreference === 'phone') {
         actions.push({
           id: 'send_sms_with_calendly',
-          description: 'Send targeted SMS to existing client with secure Calendly booking link and client reference number. Message includes personalized greeting using client name, brief matter reference, and mobile-optimized booking interface. SMS delivery confirmation and booking tracking automatically enabled.',
+          description: 'Send SMS with Calendly booking link',
           status: 'active',
           trigger: 'Immediate - within 1 minute of call completion',
           data: {
@@ -254,7 +254,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         });
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send Microsoft Teams notification to assigned fee earner with client context, call summary, preferred phone contact method, and booking alert. Includes client communication history, recent matter activity, and suggested callback times. Fee earner receives comprehensive context for immediate follow-up preparation.',
+          description: 'Send Teams notification to fee earner',
           status: 'active',
           trigger: 'Immediate - parallel with client SMS',
           data: {
