@@ -358,7 +358,7 @@ const CallHub: React.FC = () => {
     const canSave =
         !!callKind &&
         (callKind !== 'message' || !!enquiryType) &&
-        !!contactPreference &&
+        (callKind === 'message' || !!contactPreference) && // Messages don't need contact preference
         !!contactPhone &&
         !!firstName &&
         !!lastName &&
