@@ -10,30 +10,48 @@ export interface ActionStep {
 }
 
 export interface FormData {
+  // Core call data
   callKind: string | null;
   enquiryType: string | null;
   isClient: boolean | null;
   contactPreference: string | null;
   relationship: string | null;
   areaOfWork: string | null;
+  
+  // Caller details
   firstName: string;
   lastName: string;
   email: string;
   contactPhone: string;
   countryCode: string;
+  
+  // System tracking
+  claimTime: number | null;
+  contactTime: number | null;
+  abandonTime: number | null;
+  clientInfo?: any; // Client lookup result data
+  
+  // Form fields
+  notes: string;
+  initialContactMethod: string | null;
+  
+  // Message-specific fields
   teamMember?: string;
   ccTeamMember?: string;
   urgent?: boolean;
   urgentReason?: string;
-  claimTime: number | null;
-  contactTime: number | null;
-  clientInfo?: any; // Client lookup result data
-  notes: string;
+  messageFrom?: string;
+  
+  // Caller categorization
+  callerCategory?: string;
+  
+  // Common enquiry fields
   heardAboutUs?: string;
-  searchTerm?: string;
-  webPageVisited?: string;
-  briefSummary?: string;
-  // Area-specific fields
+  searchTerm: string;
+  webPageVisited: string;
+  briefSummary: string;
+  
+  // Area-specific enquiry fields
   propertyDescription?: string;
   propertyValue?: string;
   propertyInterest?: string;
@@ -44,7 +62,6 @@ export interface FormData {
   commercialValue?: string;
   commercialDescription?: string;
   urgentAssistance?: string;
-  [key: string]: any;
 }
 
 export const buildActions = (formData: FormData): ActionStep[] => {
