@@ -38,6 +38,12 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
           ccTeamMember: formData.ccTeamMember,
           urgent: formData.urgent,
           urgentReason: formData.urgent ? formData.urgentReason : null,
+          ...(formData.enquiryType === 'existing' && formData.clientInfo && {
+            clientLookup: {
+              found: true,
+              clientData: formData.clientInfo
+            }
+          })
         }
       }),
       
