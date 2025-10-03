@@ -144,28 +144,30 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     
     // Database lookup applies to all telephone message types
     actions.push({
-      id: 'pa_database_lookup',
-      description: 'PA (Power Automate) performs database lookup to identify caller',
+      id: 'callhub_api_lookup',
+      description: 'CallHub API performs database lookup to identify caller',
       trigger: 'Fires when "Lookup Client" button is pressed',
       status: lookupPressed ? 'complete' : hasContactPhone ? 'pending' : 'pending',
       data: {
         phone: formData.contactPhone,
         countryCode: formData.countryCode,
         hasPhone: hasContactPhone,
-        messageType: formData.enquiryType
+        messageType: formData.enquiryType,
+        apiEndpoint: 'callhub/lookup'
       }
     });
     
     if (lookupPressed) {
       actions.push({
-        id: 'pa_retrieve_client_data',
-        description: 'PA (Power Automate) retrieves caller information and context',
-        trigger: 'After successful database lookup',
+        id: 'callhub_api_retrieve_data',
+        description: 'CallHub API retrieves caller information and context from database',
+        trigger: 'After successful API lookup',
         status: 'complete',
         data: {
           callerFound: Boolean(formData.clientInfo),
           callerData: formData.clientInfo,
-          messageType: formData.enquiryType
+          messageType: formData.enquiryType,
+          apiResponse: 'received'
         }
       });
     }
