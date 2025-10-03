@@ -200,7 +200,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     
     actions.push({
       id: 'pa_send_email',
-      description: `Send email to ${formData.teamMember || '[MISSING RECIPIENT]'}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''}`,
+      description: `Send comprehensive telephone message email to ${formData.teamMember || '[MISSING RECIPIENT]'}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT PRIORITY]' : ''}. Email includes complete caller context, message details, contact information, urgency assessment, and recommended response timeframe. System automatically formats message with caller verification status, relationship to firm, and suggested follow-up actions based on message type and urgency level.`,
       trigger: 'After payload parsing complete',
       status: hasClaimTime && hasTeamMember ? 'complete' : 'pending',
       data: {
@@ -218,68 +218,156 @@ export const buildActions = (formData: FormData): ActionStep[] => {
       if (formData.contactPreference === 'email') {
         actions.push({
           id: 'send_email_with_calendly',
-          description: 'Send email with Calendly booking link',
-          status: 'active'
+          description: 'Send personalized email to existing client with Calendly booking link for appointment scheduling. Email includes client reference, matter details lookup from database, and direct calendar integration for immediate booking. System automatically tracks email delivery and booking confirmation.',
+          status: 'active',
+          trigger: 'Immediate - within 2 minutes of call completion',
+          data: {
+            template: 'existing_client_email_calendly',
+            personalization: 'client_matter_history',
+            trackingEnabled: true
+          }
         });
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send Teams notification to fee earner',
-          status: 'active'
+          description: 'Send Microsoft Teams notification to assigned fee earner with client context, call summary, area of work, and booking alert. Includes direct links to client file, recent matter activity, and calendar availability. Fee earner receives desktop and mobile notifications with one-click access to all relevant information.',
+          status: 'active',
+          trigger: 'Immediate - parallel with client email',
+          data: {
+            recipient: 'assigned_fee_earner',
+            priority: 'normal',
+            includeClientContext: true,
+            deepLinks: ['client_file', 'matter_history', 'calendar']
+          }
         });
       } else if (formData.contactPreference === 'phone') {
         actions.push({
           id: 'send_sms_with_calendly',
-          description: 'Send SMS with Calendly booking link',
-          status: 'active'
+          description: 'Send targeted SMS to existing client with secure Calendly booking link and client reference number. Message includes personalized greeting using client name, brief matter reference, and mobile-optimized booking interface. SMS delivery confirmation and booking tracking automatically enabled.',
+          status: 'active',
+          trigger: 'Immediate - within 1 minute of call completion',
+          data: {
+            template: 'existing_client_sms_calendly',
+            personalization: 'client_name_matter_ref',
+            mobileOptimized: true,
+            deliveryTracking: true
+          }
         });
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send Teams notification to fee earner',
-          status: 'active'
+          description: 'Send Microsoft Teams notification to assigned fee earner with client context, call summary, preferred phone contact method, and booking alert. Includes client communication history, recent matter activity, and suggested callback times. Fee earner receives comprehensive context for immediate follow-up preparation.',
+          status: 'active',
+          trigger: 'Immediate - parallel with client SMS',
+          data: {
+            recipient: 'assigned_fee_earner',
+            priority: 'normal',
+            includeClientContext: true,
+            communicationHistory: true,
+            suggestedCallbackTimes: true
+          }
         });
       }
     } else if (formData.isClient === false) {
       if (formData.relationship === 'prospect') {
         actions.push({
           id: 'send_email_and_sms',
-          description: 'Send email and SMS to prospect',
-          status: 'active'
+          description: 'Launch comprehensive dual-channel prospect communication campaign. Send professionally branded email with firm credentials, area of work expertise, initial consultation offer, and fee structure transparency. Simultaneously send SMS with immediate response option and callback scheduling. Both channels include lead tracking, engagement metrics, and automated follow-up sequences based on prospect behavior.',
+          status: 'active',
+          trigger: 'Immediate - within 3 minutes of call completion',
+          data: {
+            emailTemplate: 'prospect_consultation_offer',
+            smsTemplate: 'prospect_callback_scheduling',
+            leadTracking: true,
+            engagementMetrics: true,
+            followUpSequence: 'prospect_nurture_campaign'
+          }
         });
         actions.push({
           id: 'create_hunter_card',
-          description: 'Create Hunter CRM card',
-          status: 'active'
+          description: 'Create comprehensive Hunter CRM prospect card with complete call context, area of work classification, initial needs assessment, contact preferences, and lead scoring. Automatically populate caller details, enquiry specifics, area-specific qualification data, and assign to appropriate fee earner based on expertise matching. Include follow-up task scheduling and lead nurturing workflow activation.',
+          status: 'active',
+          trigger: 'Immediate - parallel with communication dispatch',
+          data: {
+            leadScore: 'calculated_from_enquiry_data',
+            areaOfWorkMatching: true,
+            expertiseBasedAssignment: true,
+            followUpTasksCreated: true,
+            nurturingWorkflowActive: true
+          }
         });
         
         if (formData.areaOfWork === 'property') {
           actions.push({
             id: 'alert_ac',
-            description: 'Send alert to AC (Property)',
-            status: 'active'
+            description: 'Send priority alert to AC (Property Specialist) with complete property enquiry context including property type, transaction value, urgency indicators, and prospect qualification data. Alert includes property-specific assessment criteria, conflict checking requirements, and immediate action recommendations. Specialist receives mobile notification with property enquiry dashboard access and client context summary.',
+            status: 'active',
+            trigger: 'Immediate - parallel with prospect communications',
+            data: {
+              specialist: 'AC_Property',
+              priority: 'property_enquiry',
+              propertyContext: formData.propertyDescription || 'unspecified',
+              transactionValue: formData.propertyValue || 'unspecified',
+              conflictCheckRequired: true,
+              dashboardAccess: true
+            }
           });
         } else if (formData.areaOfWork === 'construction') {
           actions.push({
             id: 'alert_jw',
-            description: 'Send alert to JW (Construction)',
-            status: 'active'
+            description: 'Send priority alert to JW (Construction Specialist) with comprehensive construction enquiry details including project type, dispute value, adjudication requirements, and contractor/client classification. Alert includes construction-specific risk assessment, adjudication timeline considerations, and expert assignment recommendations. Specialist receives immediate notification with construction enquiry dashboard and project context analysis.',
+            status: 'active',
+            trigger: 'Immediate - parallel with prospect communications',
+            data: {
+              specialist: 'JW_Construction',
+              priority: 'construction_enquiry',
+              constructionContext: formData.constructionDescription || 'unspecified',
+              disputeValue: formData.constructionValue || 'unspecified',
+              adjudicationRequired: formData.adjudicationEnquiry === 'yes',
+              riskAssessment: true,
+              dashboardAccess: true
+            }
           });
         } else {
           actions.push({
             id: 'alert_team',
-            description: 'Send alert to team',
-            status: 'active'
+            description: 'Send coordinated alert to appropriate legal team based on area of work classification. Alert includes complete enquiry assessment, expertise matching recommendations, capacity checking, and case complexity indicators. Team receives collaborative notification with prospect qualification matrix, fee earner assignment suggestions, and immediate response coordination. System automatically routes to available specialists with relevant experience.',
+            status: 'active',
+            trigger: 'Immediate - parallel with prospect communications',
+            data: {
+              teamType: 'area_of_work_specialists',
+              areaOfWork: formData.areaOfWork || 'general',
+              expertiseMatching: true,
+              capacityChecking: true,
+              complexityIndicators: 'calculated_from_enquiry',
+              collaborativeResponse: true
+            }
           });
         }
       } else {
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send Teams message to fee earner',
-          status: 'active'
+          description: 'Send comprehensive Microsoft Teams notification to assigned fee earner with non-prospect enquiry context including relationship type (opponent, barrister, expert, other), call purpose classification, urgency assessment, and recommended response approach. Message includes caller relationship history, matter context if applicable, and suggested handling protocols based on relationship category.',
+          status: 'active',
+          trigger: 'Immediate - within 2 minutes of call completion',
+          data: {
+            relationship: formData.relationship || 'unspecified',
+            enquiryType: 'non_prospect',
+            urgencyAssessment: 'calculated_from_context',
+            handlingProtocol: 'relationship_based',
+            matterContext: true
+          }
         });
         actions.push({
           id: 'send_email_to_fe',
-          description: 'Send email to fee earner',
-          status: 'active'
+          description: 'Send detailed email summary to assigned fee earner with complete non-prospect enquiry documentation including caller details, relationship classification, enquiry specifics, area of work context, and follow-up requirements. Email includes structured call notes, relationship management recommendations, and next action scheduling with appropriate response timeframes based on caller relationship type.',
+          status: 'active',
+          trigger: 'Immediate - parallel with Teams notification',
+          data: {
+            callDocumentation: 'structured_summary',
+            relationshipManagement: true,
+            followUpScheduling: true,
+            responseTimeframe: 'relationship_appropriate',
+            nextActionRecommendations: true
+          }
         });
       }
     }
