@@ -650,7 +650,7 @@ const CallHub: React.FC = () => {
                                         <PrimaryButton
                                             text="Lookup Client"
                                             onClick={handleLookup}
-                                            disabled={!(callKind === 'message' && enquiryType === 'existing')}
+                                            disabled={!(callKind === 'message' || (callKind === 'enquiry' && !email))}
                                         />
                                     </Stack>
                                     {lookupStatus && (
