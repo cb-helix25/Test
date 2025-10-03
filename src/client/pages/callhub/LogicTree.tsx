@@ -87,24 +87,40 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                   active: isClient === true,
                   children: [
                     {
-                      id: 'contact-pref',
-                      label: 'Contact Preference?',
-                      active: isClient === true && contactPreference !== null,
-                      condition: contactPreference || 'pending',
-                      children: [
+                      id: 'separate-matter-gate',
+                      label: 'New/Separate Matter?',
+                      active: isClient === true && formData.isSeparateMatter !== null,
+                      condition: formData.isSeparateMatter === null ? 'pending' : formData.isSeparateMatter ? 'YES' : 'NO',
+                      children: formData.isSeparateMatter === false ? [
                         {
-                          id: 'email-flow',
-                          label: 'Email Flow',
-                          active: contactPreference === 'email',
-                          action: contactPreference === 'email' ? actionsDisplay : undefined
-                        },
-                        {
-                          id: 'phone-flow',
-                          label: 'Phone Flow', 
-                          active: contactPreference === 'phone',
-                          action: contactPreference === 'phone' ? actionsDisplay : undefined
+                          id: 'reclassified-message',
+                          label: 'Reclassified as Message',
+                          active: formData.autoReroutedFromClientEnquiry,
+                          condition: 'Existing client, existing matter',
+                          action: formData.autoReroutedFromClientEnquiry ? actionsDisplay : 'Converting to message workflow...'
                         }
-                      ]
+                      ] : formData.isSeparateMatter === true ? [
+                        {
+                          id: 'contact-pref',
+                          label: 'Contact Preference?',
+                          active: isClient === true && contactPreference !== null,
+                          condition: contactPreference || 'pending',
+                          children: [
+                            {
+                              id: 'email-flow',
+                              label: 'Email Flow',
+                              active: contactPreference === 'email',
+                              action: contactPreference === 'email' ? actionsDisplay : undefined
+                            },
+                            {
+                              id: 'phone-flow',
+                              label: 'Phone Flow', 
+                              active: contactPreference === 'phone',
+                              action: contactPreference === 'phone' ? actionsDisplay : undefined
+                            }
+                          ]
+                        }
+                      ] : []
                     }
                   ]
                 },
