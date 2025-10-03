@@ -20,12 +20,14 @@ export interface FormData {
   lastName: string;
   email: string;
   contactPhone: string;
+  countryCode: string;
   teamMember?: string;
   ccTeamMember?: string;
   urgent?: boolean;
   urgentReason?: string;
   claimTime: number | null;
   contactTime: number | null;
+  clientInfo?: any; // Client lookup result data
   [key: string]: any;
 }
 
@@ -37,23 +39,54 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     const hasClaimTime = formData.claimTime !== null;
     const hasTeamMember = Boolean(formData.teamMember);
     
+    // Special case: Existing client message needs database lookup
+    if (formData.enquiryType === 'existing') {
+      const hasContactPhone = Boolean(formData.contactPhone);
+      const lookupPressed = Boolean(formData.clientInfo); // Assuming clientInfo indicates lookup was performed
+      
+      actions.push({
+        id: 'pa_database_lookup',
+        description: 'PA (Power Automate) performs database lookup for existing client',
+        trigger: 'Fires when "Lookup Client" button is pressed',
+        status: lookupPressed ? 'complete' : hasContactPhone ? 'pending' : 'pending',
+        data: {
+          phone: formData.contactPhone,
+          countryCode: formData.countryCode,
+          hasPhone: hasContactPhone
+        }
+      });
+      
+      if (lookupPressed) {
+        actions.push({
+          id: 'pa_retrieve_client_data',
+          description: 'PA (Power Automate) retrieves client matters and contact information',
+          trigger: 'After successful database lookup',
+          status: 'complete',
+          data: {
+            clientFound: Boolean(formData.clientInfo),
+            clientData: formData.clientInfo
+          }
+        });
+      }
+    }
+    
     actions.push({
       id: 'activate_pa',
-      description: 'Activate PA (Personal Assistant) system',
+      description: 'Activate PA (Power Automate) system',
       trigger: 'Fires when "Claim Enquiry" is clicked',
       status: hasClaimTime ? 'complete' : 'pending'
     });
     
     actions.push({
       id: 'pa_receive_http_request',
-      description: 'PA receives HTTP request with call data',
+      description: 'PA (Power Automate) receives HTTP request with call data',
       trigger: 'Immediate after PA activation',
       status: hasClaimTime ? 'complete' : 'pending'
     });
     
     actions.push({
       id: 'pa_parse_payload',
-      description: 'PA parses JSON payload and extracts message details',
+      description: 'PA (Power Automate) parses JSON payload and extracts message details',
       trigger: 'After HTTP request received',
       status: hasClaimTime ? 'complete' : 'pending',
       data: {
