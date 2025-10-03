@@ -49,13 +49,23 @@ const CallHub: React.FC = () => {
     const [callerCategory, setCallerCategory] = useState<string | undefined>();
     const [messageFrom, setMessageFrom] = useState<string | undefined>();
     const [areaOfWork, setAreaOfWork] = useState<string | undefined>();
-    const [valueInDispute, setValueInDispute] = useState<string | undefined>();
-    const [prospectDescription, setProspectDescription] = useState<string | undefined>();
-    const [constructionOrHomeOwner, setConstructionOrHomeOwner] = useState<string | undefined>();
-    const [propertyProfessional, setPropertyProfessional] = useState<string | undefined>();
+
     const [heardAboutUs, setHeardAboutUs] = useState<string | undefined>();
     const [searchTerm, setSearchTerm] = useState('');
     const [webPageVisited, setWebPageVisited] = useState('');
+    const [briefSummary, setBriefSummary] = useState('');
+    
+    // Area-specific fields
+    const [propertyDescription, setPropertyDescription] = useState<string | undefined>();
+    const [propertyValue, setPropertyValue] = useState<string | undefined>();
+    const [propertyInterest, setPropertyInterest] = useState<string | undefined>();
+    const [employmentDescription, setEmploymentDescription] = useState<string | undefined>();
+    const [constructionDescription, setConstructionDescription] = useState<string | undefined>();
+    const [constructionValue, setConstructionValue] = useState<string | undefined>();
+    const [adjudicationEnquiry, setAdjudicationEnquiry] = useState<string | undefined>();
+    const [commercialValue, setCommercialValue] = useState<string | undefined>();
+    const [commercialDescription, setCommercialDescription] = useState<string | undefined>();
+    const [urgentAssistance, setUrgentAssistance] = useState<string | undefined>();
 
     useEffect(() => {
         if (callKind !== 'message' || enquiryType !== 'existing') {
@@ -95,43 +105,91 @@ const CallHub: React.FC = () => {
         { key: 'other', text: 'other / unsure' },
     ];
 
-    const valueOptions: IDropdownOption[] = [
-        { key: 'lt10', text: 'Less than £10,000' },
-        { key: '10-50', text: '£10,000 to £50,000' },
-        { key: '50-100', text: '£50,000 to £100,000' },
-        { key: 'gt100', text: 'Greater than £100,000' },
-        { key: 'other', text: 'The claim is for something other than money' },
-        { key: 'unsure', text: 'unsure' },
-    ];
 
-    const prospectOptions: IDropdownOption[] = [
-        { key: 'property-owner', text: 'Property Owner' },
-        { key: 'tenant', text: 'Tenant' },
-        { key: 'director', text: 'Director' },
-        { key: 'company-owner', text: 'Company Owner' },
-        { key: 'construction-professional', text: 'Construction or Property Professional' },
-        { key: 'solicitor', text: 'Solicitor' },
-        { key: 'other', text: 'Other' },
-    ];
-
-    const constructionHomeOptions: IDropdownOption[] = [
-        { key: 'construction-professional', text: 'Construction Professional' },
-        { key: 'home-owner', text: 'Home Owner' },
-        { key: 'none', text: 'None of these' },
-    ];
-
-    const propertyLandlordTenantOptions: IDropdownOption[] = [
-        { key: 'property-professional', text: 'Property Professional' },
-        { key: 'landlord', text: 'Landlord' },
-        { key: 'tenant', text: 'Tenant' },
-        { key: 'none', text: 'None of these' },
-    ];
 
     const hearAboutOptions: IDropdownOption[] = [
         { key: 'google', text: 'google search' },
         { key: 'following', text: 'team/firm following' },
         { key: 'referral', text: 'referral' },
         { key: 'other', text: 'other' },
+    ];
+
+    // Area-specific dropdown options
+    const propertyDescriptionOptions: IDropdownOption[] = [
+        { key: 'landlord', text: 'I am a landlord' },
+        { key: 'tenant', text: 'I am a tenant' },
+        { key: 'investor', text: 'I am an investor' },
+        { key: 'joint-owner', text: 'I am a joint property owner' },
+        { key: 'leaseholder', text: 'I am a leaseholder' },
+        { key: 'freehold-owner', text: 'I am freehold owner' },
+        { key: 'other', text: 'Other' },
+    ];
+
+    const propertyValueOptions: IDropdownOption[] = [
+        { key: '10k-less', text: '£10,000 or less' },
+        { key: '10k-100k', text: '£10,001 - £100,000' },
+        { key: '100k-500k', text: '£100,001 - £500,000' },
+        { key: '500k-more', text: '£500,001 or more' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const propertyInterestOptions: IDropdownOption[] = [
+        { key: 'residential', text: 'Residential Property' },
+        { key: 'commercial', text: 'Commercial Property' },
+        { key: 'jointly-owned', text: 'A Jointly Owned Property' },
+        { key: 'lease-related', text: 'A Lease Related' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const employmentDescriptionOptions: IDropdownOption[] = [
+        { key: 'employer', text: 'I am an Employer or Company Representative' },
+        { key: 'employee', text: 'I am an Employee' },
+        { key: 'settlement', text: 'I\'ve been offered a Settlement Agreement' },
+        { key: 'contractor', text: 'Contractor' },
+        { key: 'other', text: 'Other' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const constructionDescriptionOptions: IDropdownOption[] = [
+        { key: 'construction-professional', text: 'I am a builder or other construction professional' },
+        { key: 'home-owner', text: 'I am a home owner' },
+        { key: 'other', text: 'Other' },
+    ];
+
+    const constructionValueOptions: IDropdownOption[] = [
+        { key: '10k-less', text: '£10,000 or less' },
+        { key: '10k-100k', text: '£10,001 - £100,000' },
+        { key: '100k-500k', text: '£100,001 - £500,000' },
+        { key: '500k-more', text: '£500,001 or more' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const adjudicationOptions: IDropdownOption[] = [
+        { key: 'yes', text: 'Yes' },
+        { key: 'no', text: 'No' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const commercialValueOptions: IDropdownOption[] = [
+        { key: '10k-less', text: '£10,000 or less' },
+        { key: '10k-100k', text: '£10,001 - £100,000' },
+        { key: '100k-500k', text: '£100,001 - £500,000' },
+        { key: '500k-more', text: '£500,001 or more' },
+        { key: 'uncertain', text: 'Uncertain' },
+    ];
+
+    const commercialDescriptionOptions: IDropdownOption[] = [
+        { key: 'shareholder-director', text: 'I am a shareholder or director' },
+        { key: 'statutory-demand', text: 'I have received a statutory demand' },
+        { key: 'owed-money', text: 'I am owed money' },
+        { key: 'suffered-losses', text: 'I have suffered losses caused by someone else' },
+        { key: 'other', text: 'Other' },
+    ];
+
+    const urgentAssistanceOptions: IDropdownOption[] = [
+        { key: 'yes', text: 'Yes' },
+        { key: 'no', text: 'No' },
+        { key: 'uncertain', text: 'Uncertain' },
     ];
 
     const handleClaim = async () => {
@@ -223,13 +281,11 @@ const CallHub: React.FC = () => {
                 callerCategory,
                 messageFrom,
                 areaOfWork,
-                valueInDispute,
-                prospectDescription,
-                constructionOrHomeOwner,
-                propertyProfessional,
                 heardAboutUs,
                 searchTerm,
                 webPageVisited,
+                // Note: New area-specific fields are captured in formData for UI components
+                // but not yet sent to backend until API is updated
             });
             setSaveSuccess(true);
         } catch (err: any) {
@@ -298,13 +354,22 @@ const CallHub: React.FC = () => {
         ccTeamMember,
         urgent,
         urgentReason,
-        valueInDispute,
-        prospectDescription,
-        constructionOrHomeOwner,
-        propertyProfessional,
         heardAboutUs,
         searchTerm,
-        webPageVisited
+        webPageVisited,
+        briefSummary,
+        // Area-specific fields
+        propertyDescription,
+        propertyValue,
+        propertyInterest,
+        employmentDescription,
+        constructionDescription,
+        constructionValue,
+        adjudicationEnquiry,
+        commercialValue,
+        commercialDescription,
+        urgentAssistance,
+        clientInfo
     };
 
     return (
@@ -630,30 +695,92 @@ const CallHub: React.FC = () => {
                                             selectedKey={areaOfWork}
                                             onChange={(_, o) => setAreaOfWork(o?.key as string)}
                                         />
-                                        <Dropdown
-                                            label="Value in Dispute"
-                                            options={valueOptions}
-                                            selectedKey={valueInDispute}
-                                            onChange={(_, o) => setValueInDispute(o?.key as string)}
-                                        />
-                                        <Dropdown
-                                            label="Which best describes you?"
-                                            options={prospectOptions}
-                                            selectedKey={prospectDescription}
-                                            onChange={(_, o) => setProspectDescription(o?.key as string)}
-                                        />
-                                        <Dropdown
-                                            label="Is the prospect a Construction Professional or a Home Owner?"
-                                            options={constructionHomeOptions}
-                                            selectedKey={constructionOrHomeOwner}
-                                            onChange={(_, o) => setConstructionOrHomeOwner(o?.key as string)}
-                                        />
-                                        <Dropdown
-                                            label="Is the prospect a Property Professional, Landlord, or a Tenant?"
-                                            options={propertyLandlordTenantOptions}
-                                            selectedKey={propertyProfessional}
-                                            onChange={(_, o) => setPropertyProfessional(o?.key as string)}
-                                        />
+
+                                        {/* Property-specific fields */}
+                                        {areaOfWork === 'property' && (
+                                            <>
+                                                <Dropdown
+                                                    label="Which best describes you?"
+                                                    options={propertyDescriptionOptions}
+                                                    selectedKey={propertyDescription}
+                                                    onChange={(_, o) => setPropertyDescription(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="Approximate value in dispute"
+                                                    options={propertyValueOptions}
+                                                    selectedKey={propertyValue}
+                                                    onChange={(_, o) => setPropertyValue(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="I am interested in discussing"
+                                                    options={propertyInterestOptions}
+                                                    selectedKey={propertyInterest}
+                                                    onChange={(_, o) => setPropertyInterest(o?.key as string)}
+                                                />
+                                            </>
+                                        )}
+
+                                        {/* Employment-specific fields */}
+                                        {areaOfWork === 'employment' && (
+                                            <>
+                                                <Dropdown
+                                                    label="Which best describes you?"
+                                                    options={employmentDescriptionOptions}
+                                                    selectedKey={employmentDescription}
+                                                    onChange={(_, o) => setEmploymentDescription(o?.key as string)}
+                                                />
+                                            </>
+                                        )}
+
+                                        {/* Construction-specific fields */}
+                                        {areaOfWork === 'construction' && (
+                                            <>
+                                                <Dropdown
+                                                    label="Which best describes you?"
+                                                    options={constructionDescriptionOptions}
+                                                    selectedKey={constructionDescription}
+                                                    onChange={(_, o) => setConstructionDescription(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="Approximate value in dispute"
+                                                    options={constructionValueOptions}
+                                                    selectedKey={constructionValue}
+                                                    onChange={(_, o) => setConstructionValue(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="Are you enquiring regarding an adjudication?"
+                                                    options={adjudicationOptions}
+                                                    selectedKey={adjudicationEnquiry}
+                                                    onChange={(_, o) => setAdjudicationEnquiry(o?.key as string)}
+                                                />
+                                            </>
+                                        )}
+
+                                        {/* Commercial-specific fields */}
+                                        {areaOfWork === 'commercial' && (
+                                            <>
+                                                <Dropdown
+                                                    label="Approximate value in dispute"
+                                                    options={commercialValueOptions}
+                                                    selectedKey={commercialValue}
+                                                    onChange={(_, o) => setCommercialValue(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="Which best describes you?"
+                                                    options={commercialDescriptionOptions}
+                                                    selectedKey={commercialDescription}
+                                                    onChange={(_, o) => setCommercialDescription(o?.key as string)}
+                                                />
+                                                <Dropdown
+                                                    label="Has anything happened that requires urgent assistance?"
+                                                    options={urgentAssistanceOptions}
+                                                    selectedKey={urgentAssistance}
+                                                    onChange={(_, o) => setUrgentAssistance(o?.key as string)}
+                                                />
+                                            </>
+                                        )}
+
+                                        {/* Common fields for all enquiries */}
                                         <Dropdown
                                             label="How did you hear about us?"
                                             options={hearAboutOptions}
@@ -671,6 +798,13 @@ const CallHub: React.FC = () => {
                                             description="If known, what page were they looking at? (e.g., helix-law.com/commercial)"
                                             value={webPageVisited}
                                             onChange={(_, v) => setWebPageVisited(v || '')}
+                                        />
+                                        <TextField
+                                            label="Brief summary of the background"
+                                            multiline
+                                            value={briefSummary}
+                                            onChange={(_, v) => setBriefSummary(v || '')}
+                                            description="Please provide a brief overview of the situation or background"
                                         />
                                     </>
                                 )}
@@ -727,13 +861,21 @@ const CallHub: React.FC = () => {
                                     setCallerCategory(undefined);
                                     setMessageFrom(undefined);
                                     setAreaOfWork(undefined);
-                                    setValueInDispute(undefined);
-                                    setProspectDescription(undefined);
-                                    setConstructionOrHomeOwner(undefined);
-                                    setPropertyProfessional(undefined);
                                     setHeardAboutUs(undefined);
                                     setSearchTerm('');
                                     setWebPageVisited('');
+                                    setBriefSummary('');
+                                    // Reset area-specific fields
+                                    setPropertyDescription(undefined);
+                                    setPropertyValue(undefined);
+                                    setPropertyInterest(undefined);
+                                    setEmploymentDescription(undefined);
+                                    setConstructionDescription(undefined);
+                                    setConstructionValue(undefined);
+                                    setAdjudicationEnquiry(undefined);
+                                    setCommercialValue(undefined);
+                                    setCommercialDescription(undefined);
+                                    setUrgentAssistance(undefined);
                                 }} 
                             />
                             <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
