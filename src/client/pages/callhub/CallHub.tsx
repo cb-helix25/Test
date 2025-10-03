@@ -76,18 +76,38 @@ const CallHub: React.FC = () => {
         }
     }, [callKind, enquiryType]);
 
-    // Reset separate matter flag when call kind changes
+    // Reset separate matter flag when call kind changes (but preserve reclassification flags)
     useEffect(() => {
-        setIsSeparateMatter(null);
-        setAutoReroutedFromClientEnquiry(false);
-    }, [callKind]);
+        // Only reset if this is not an automatic reclassification
+        if (!autoReroutedFromClientEnquiry) {
+            setIsSeparateMatter(null);
+        }
+        // Don't reset autoReroutedFromClientEnquiry here as it would clear the audit trail
+    }, [callKind, autoReroutedFromClientEnquiry]);
 
-    // Helper function to convert client enquiry to message
+    // Helper function to convert client enquiry to message (automatic)
     const convertClientEnquiryToMessage = () => {
+        // Preserve the separate matter decision for audit trail
+        // isSeparateMatter should remain false (the reason for conversion)
         setCallKind('message');
         setEnquiryType('existing');
         setAutoReroutedFromClientEnquiry(true);
         setContactPreference(null); // Reset contact preference since it's message flow now
+    };
+
+    // Helper functions for manual call kind changes
+    const handleManualEnquirySelection = () => {
+        setCallKind('enquiry');
+        // Reset reclassification flags for manual selection
+        setIsSeparateMatter(null);
+        setAutoReroutedFromClientEnquiry(false);
+    };
+
+    const handleManualMessageSelection = () => {
+        setCallKind('message');
+        // Reset reclassification flags for manual selection
+        setIsSeparateMatter(null);
+        setAutoReroutedFromClientEnquiry(false);
     };
 
     const countryCodeOptions: IDropdownOption[] = [
@@ -416,13 +436,13 @@ const CallHub: React.FC = () => {
                             <div className="client-type-selection">
                                 <div
                                     className={`client-type-icon-btn${callKind === 'enquiry' ? ' active' : ''}`}
-                                    onClick={() => setCallKind('enquiry')}
+                                    onClick={handleManualEnquirySelection}
                                 >
                                     <span className="client-type-label">New enquiry</span>
                                 </div>
                                 <div
                                     className={`client-type-icon-btn${callKind === 'message' ? ' active' : ''}`}
-                                    onClick={() => setCallKind('message')}
+                                    onClick={handleManualMessageSelection}
                                 >
                                     <span className="client-type-label">Tel message</span>
                                 </div>
