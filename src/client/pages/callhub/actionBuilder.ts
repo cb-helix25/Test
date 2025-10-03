@@ -139,36 +139,35 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     // Telephone message workflow - PA integration
     const hasClaimTime = formData.claimTime !== null;
     const hasTeamMember = Boolean(formData.teamMember);
+    const hasContactPhone = Boolean(formData.contactPhone);
+    const lookupPressed = Boolean(formData.clientInfo); // Assuming clientInfo indicates lookup was performed
     
-    // Special case: Existing client message needs database lookup
-    if (formData.enquiryType === 'existing') {
-      const hasContactPhone = Boolean(formData.contactPhone);
-      const lookupPressed = Boolean(formData.clientInfo); // Assuming clientInfo indicates lookup was performed
-      
+    // Database lookup applies to all telephone message types
+    actions.push({
+      id: 'pa_database_lookup',
+      description: 'PA (Power Automate) performs database lookup to identify caller',
+      trigger: 'Fires when "Lookup Client" button is pressed',
+      status: lookupPressed ? 'complete' : hasContactPhone ? 'pending' : 'pending',
+      data: {
+        phone: formData.contactPhone,
+        countryCode: formData.countryCode,
+        hasPhone: hasContactPhone,
+        messageType: formData.enquiryType
+      }
+    });
+    
+    if (lookupPressed) {
       actions.push({
-        id: 'pa_database_lookup',
-        description: 'PA (Power Automate) performs database lookup for existing client',
-        trigger: 'Fires when "Lookup Client" button is pressed',
-        status: lookupPressed ? 'complete' : hasContactPhone ? 'pending' : 'pending',
+        id: 'pa_retrieve_client_data',
+        description: 'PA (Power Automate) retrieves caller information and context',
+        trigger: 'After successful database lookup',
+        status: 'complete',
         data: {
-          phone: formData.contactPhone,
-          countryCode: formData.countryCode,
-          hasPhone: hasContactPhone
+          callerFound: Boolean(formData.clientInfo),
+          callerData: formData.clientInfo,
+          messageType: formData.enquiryType
         }
       });
-      
-      if (lookupPressed) {
-        actions.push({
-          id: 'pa_retrieve_client_data',
-          description: 'PA (Power Automate) retrieves client matters and contact information',
-          trigger: 'After successful database lookup',
-          status: 'complete',
-          data: {
-            clientFound: Boolean(formData.clientInfo),
-            clientData: formData.clientInfo
-          }
-        });
-      }
     }
     
     actions.push({
