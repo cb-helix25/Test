@@ -40,6 +40,45 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
     firstName,
     lastName
   } = formData;
+
+  // Use the same action-building logic as JsonPreview
+  const buildActions = () => {
+    const actions: string[] = [];
+    
+    if (isClient === true) {
+      if (contactPreference === 'email') {
+        actions.push('send_email_with_calendly');
+        actions.push('send_teams_message_to_fe');
+      } else if (contactPreference === 'phone') {
+        actions.push('send_sms_with_calendly');
+        actions.push('send_teams_message_to_fe');
+      }
+    } else if (isClient === false) {
+      if (relationship === 'prospect') {
+        actions.push('send_email_and_sms');
+        actions.push('create_hunter_card');
+        
+        if (areaOfWork === 'property') {
+          actions.push('alert_ac');
+        } else if (areaOfWork === 'construction') {
+          actions.push('alert_jw');
+        } else {
+          actions.push('alert_team');
+        }
+      } else {
+        actions.push('send_teams_message_to_fe');
+        actions.push('send_email_to_fe');
+      }
+    }
+    
+    return actions;
+  };
+
+  const formatActions = (actions: string[]) => {
+    return actions.map(action => 
+      action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    ).join('\n');
+  };
   
   const buildLogicTree = (): LogicNode => {
     return {
@@ -65,14 +104,14 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                   active: Boolean(firstName && lastName),
                   condition: `${firstName} ${lastName}`.trim() || 'pending',
                   action: enquiryType === 'other' && relationship 
-                    ? `Relationship: ${relationship}` 
+                    ? `Message for ${relationship} - Process accordingly` 
                     : enquiryType === 'existing' 
-                    ? 'Existing client message'
+                    ? 'Route to existing client workflow'
                     : enquiryType === 'expert'
-                    ? 'Expert message'
+                    ? 'Forward to relevant team member'
                     : enquiryType === 'opposition'
-                    ? 'Opposition message'
-                    : 'Process message'
+                    ? 'Handle as opposition communication'
+                    : 'Process message according to type'
                 }
               ]
             }
@@ -98,13 +137,13 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                           id: 'email-flow',
                           label: 'Email Flow',
                           active: contactPreference === 'email',
-                          action: '📧 Auto-send email + Calendly link\n📢 Teams message to FE'
+                          action: contactPreference === 'email' ? formatActions(buildActions()) : undefined
                         },
                         {
                           id: 'phone-flow',
                           label: 'Phone Flow', 
                           active: contactPreference === 'phone',
-                          action: '📱 Auto-send SMS + Calendly link\n📢 Teams message to FE'
+                          action: contactPreference === 'phone' ? formatActions(buildActions()) : undefined
                         }
                       ]
                     }
@@ -125,13 +164,13 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                           id: 'prospect-flow',
                           label: 'Prospect Flow',
                           active: relationship === 'prospect',
-                          action: `📧📱 Auto-send email + SMS\n🎯 Hunter card update\n🚨 Alert: ${areaOfWork === 'property' ? 'AC' : areaOfWork === 'construction' ? 'JW' : 'Team'}`
+                          action: relationship === 'prospect' ? formatActions(buildActions()) : undefined
                         },
                         {
                           id: 'other-flow',
                           label: 'Other Relationship',
                           active: Boolean(relationship && relationship !== 'prospect'),
-                          action: '📢 Teams message + email to FE'
+                          action: Boolean(relationship && relationship !== 'prospect') ? formatActions(buildActions()) : undefined
                         }
                       ]
                     }
