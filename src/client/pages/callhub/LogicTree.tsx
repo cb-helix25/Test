@@ -1,21 +1,9 @@
 import React from 'react';
 import { colours } from '../../colours';
+import { buildActions, formatActionsForDisplay, type FormData } from './actionBuilder';
 
 interface LogicTreeProps {
-  formData: {
-    callKind: string | null;
-    enquiryType: string | null;
-    isClient: boolean | null;
-    contactPreference: string | null;
-    relationship: string | null;
-    areaOfWork: string | null;
-    firstName: string;
-    lastName: string;
-    email: string;
-    contactPhone: string;
-    messageFrom?: string;
-    [key: string]: any;
-  };
+  formData: FormData;
 }
 
 interface LogicNode {
@@ -35,50 +23,14 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
     enquiryType, 
     isClient, 
     contactPreference, 
-    relationship, 
-    areaOfWork,
+    relationship,
     firstName,
     lastName
   } = formData;
 
-  // Use the same action-building logic as JsonPreview
-  const buildActions = () => {
-    const actions: string[] = [];
-    
-    if (isClient === true) {
-      if (contactPreference === 'email') {
-        actions.push('send_email_with_calendly');
-        actions.push('send_teams_message_to_fe');
-      } else if (contactPreference === 'phone') {
-        actions.push('send_sms_with_calendly');
-        actions.push('send_teams_message_to_fe');
-      }
-    } else if (isClient === false) {
-      if (relationship === 'prospect') {
-        actions.push('send_email_and_sms');
-        actions.push('create_hunter_card');
-        
-        if (areaOfWork === 'property') {
-          actions.push('alert_ac');
-        } else if (areaOfWork === 'construction') {
-          actions.push('alert_jw');
-        } else {
-          actions.push('alert_team');
-        }
-      } else {
-        actions.push('send_teams_message_to_fe');
-        actions.push('send_email_to_fe');
-      }
-    }
-    
-    return actions;
-  };
-
-  const formatActions = (actions: string[]) => {
-    return actions.map(action => 
-      action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-    ).join('\n');
-  };
+  // Get actions from shared builder
+  const actions = buildActions(formData);
+  const actionsDisplay = formatActionsForDisplay(actions);
   
   const buildLogicTree = (): LogicNode => {
     return {
@@ -99,19 +51,11 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
               condition: enquiryType || 'pending',
               children: [
                 {
-                  id: 'message-details',
-                  label: 'Message Details',
+                  id: 'message-workflow',
+                  label: 'PA Workflow',
                   active: Boolean(firstName && lastName),
-                  condition: `${firstName} ${lastName}`.trim() || 'pending',
-                  action: enquiryType === 'other' && relationship 
-                    ? `Message for ${relationship} - Process accordingly` 
-                    : enquiryType === 'existing' 
-                    ? 'Route to existing client workflow'
-                    : enquiryType === 'expert'
-                    ? 'Forward to relevant team member'
-                    : enquiryType === 'opposition'
-                    ? 'Handle as opposition communication'
-                    : 'Process message according to type'
+                  condition: formData.teamMember ? `To: ${formData.teamMember}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''}` : 'Recipient needed',
+                  action: callKind === 'message' ? actionsDisplay : 'Process message according to type'
                 }
               ]
             }
@@ -137,13 +81,13 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                           id: 'email-flow',
                           label: 'Email Flow',
                           active: contactPreference === 'email',
-                          action: contactPreference === 'email' ? formatActions(buildActions()) : undefined
+                          action: contactPreference === 'email' ? actionsDisplay : undefined
                         },
                         {
                           id: 'phone-flow',
                           label: 'Phone Flow', 
                           active: contactPreference === 'phone',
-                          action: contactPreference === 'phone' ? formatActions(buildActions()) : undefined
+                          action: contactPreference === 'phone' ? actionsDisplay : undefined
                         }
                       ]
                     }
@@ -164,13 +108,13 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
                           id: 'prospect-flow',
                           label: 'Prospect Flow',
                           active: relationship === 'prospect',
-                          action: relationship === 'prospect' ? formatActions(buildActions()) : undefined
+                          action: relationship === 'prospect' ? actionsDisplay : undefined
                         },
                         {
                           id: 'other-flow',
                           label: 'Other Relationship',
                           active: Boolean(relationship && relationship !== 'prospect'),
-                          action: Boolean(relationship && relationship !== 'prospect') ? formatActions(buildActions()) : undefined
+                          action: Boolean(relationship && relationship !== 'prospect') ? actionsDisplay : undefined
                         }
                       ]
                     }
