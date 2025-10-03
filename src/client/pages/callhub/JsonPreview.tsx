@@ -28,6 +28,16 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
         isClient: formData.isClient,
         contactPreference: formData.contactPreference,
         relationship: formData.relationship,
+        isSeparateMatter: formData.isSeparateMatter,
+        autoReroutedFromClientEnquiry: formData.autoReroutedFromClientEnquiry,
+        ...(formData.autoReroutedFromClientEnquiry && {
+          reclassification: {
+            originalCallKind: 'enquiry',
+            reclassifiedAs: 'message',
+            reason: 'existing_client_existing_matter',
+            timestamp: Date.now()
+          }
+        })
       },
       
       // Message Details (for messages)
