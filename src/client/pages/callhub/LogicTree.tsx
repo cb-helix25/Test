@@ -49,10 +49,25 @@ export const LogicTree: React.FC<LogicTreeProps> = ({ formData }) => {
               label: 'Message Type',
               active: enquiryType !== null,
               condition: enquiryType || 'pending',
-              children: [
+              children: enquiryType === 'existing' ? [
+                {
+                  id: 'client-lookup',
+                  label: 'Database Lookup',
+                  active: Boolean(formData.contactPhone),
+                  condition: formData.clientInfo ? 'Client found' : formData.contactPhone ? 'Ready to lookup' : 'Phone needed',
+                  action: formData.clientInfo ? 'Client data retrieved from database' : 'Press "Lookup Client" to search database'
+                },
                 {
                   id: 'message-workflow',
-                  label: 'PA Workflow',
+                  label: 'PA (Power Automate) Workflow',
+                  active: Boolean(firstName && lastName),
+                  condition: formData.teamMember ? `To: ${formData.teamMember}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''}` : 'Recipient needed',
+                  action: callKind === 'message' ? actionsDisplay : 'Process message according to type'
+                }
+              ] : [
+                {
+                  id: 'message-workflow',
+                  label: 'PA (Power Automate) Workflow',
                   active: Boolean(firstName && lastName),
                   condition: formData.teamMember ? `To: ${formData.teamMember}${formData.ccTeamMember ? ` (CC: ${formData.ccTeamMember})` : ''}${formData.urgent ? ' [URGENT]' : ''}` : 'Recipient needed',
                   action: callKind === 'message' ? actionsDisplay : 'Process message according to type'
