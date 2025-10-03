@@ -28,6 +28,22 @@ export interface FormData {
   claimTime: number | null;
   contactTime: number | null;
   clientInfo?: any; // Client lookup result data
+  notes: string;
+  heardAboutUs?: string;
+  searchTerm?: string;
+  webPageVisited?: string;
+  briefSummary?: string;
+  // Area-specific fields
+  propertyDescription?: string;
+  propertyValue?: string;
+  propertyInterest?: string;
+  employmentDescription?: string;
+  constructionDescription?: string;
+  constructionValue?: string;
+  adjudicationEnquiry?: string;
+  commercialValue?: string;
+  commercialDescription?: string;
+  urgentAssistance?: string;
   [key: string]: any;
 }
 
