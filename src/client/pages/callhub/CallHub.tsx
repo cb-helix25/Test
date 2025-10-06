@@ -15,6 +15,7 @@ import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 import LogicTree from './LogicTree.tsx';
 import JsonPreview from './JsonPreview.tsx';
+import { sendClientBookingEmail } from './emailTemplates';
 
 const CallHub: React.FC = () => {
     // Core call data
@@ -45,6 +46,7 @@ const CallHub: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
 
     const [teamMember, setTeamMember] = useState<string | undefined>();
     const [ccTeamMember, setCcTeamMember] = useState('');
@@ -162,6 +164,13 @@ const CallHub: React.FC = () => {
                 callerLastName: lastName,
                 claimTime: now,
             });
+            
+            // Send email template for existing clients who prefer email contact
+            // Condition: New enquiry + Client + New Matter + Email preference
+            if (callKind === 'enquiry' && isClient === true && isSeparateMatter === true && contactPreference === 'email') {
+                console.log('Triggering client email template...');
+                await sendClientEmailTemplate();
+            }
         } catch (err) {
             console.error(err);
         }
@@ -271,6 +280,20 @@ const CallHub: React.FC = () => {
     const formatDuration = (start: number, end: number) => {
         const ms = end - start;
         return `${(ms / 1000 / 60).toFixed(1)} mins`;
+    };
+
+    const sendClientEmailTemplate = async () => {
+        try {
+            await sendClientBookingEmail({
+                firstName,
+                email
+            });
+            
+            setEmailSent(true);
+            console.log(`✅ Client email sent to ${firstName} at ${email}`);
+        } catch (error) {
+            console.error('Failed to send client email:', error);
+        }
     };
 
     const missingEmail = (callKind === 'enquiry' || contactPreference === 'email') && !email;
@@ -825,6 +848,7 @@ const CallHub: React.FC = () => {
                                     setSaving(false);
                                     setSaveError(null);
                                     setSaveSuccess(false);
+                                    setEmailSent(false);
                                     setTeamMember(undefined);
                                     setCcTeamMember('');
                                     setUrgent(false);
@@ -876,6 +900,11 @@ const CallHub: React.FC = () => {
                         {saveSuccess && (
                             <MessageBar messageBarType={MessageBarType.success} onDismiss={() => setSaveSuccess(false)}>
                                 Call saved
+                            </MessageBar>
+                        )}
+                        {emailSent && (
+                            <MessageBar messageBarType={MessageBarType.success} onDismiss={() => setEmailSent(false)}>
+                                ✅ Client email sent with booking link!
                             </MessageBar>
                         )}
                         {saveError && (
