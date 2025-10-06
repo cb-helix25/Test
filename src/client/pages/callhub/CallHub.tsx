@@ -860,6 +860,7 @@ const CallHub: React.FC = () => {
                                 disabled={!claimTime || !!contactTime || !!abandonTime}
                             />
                             <PrimaryButton text="Save Call" onClick={handleSave} disabled={!canSave} />
+                            <PrimaryButton text="Submit" onClick={handleSave} disabled={!canSave} />
                         </Stack>
 
                         {claimTime && <div>Claimed at {new Date(claimTime).toLocaleTimeString()}</div>}
