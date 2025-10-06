@@ -78,7 +78,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     
     actions.push({
       id: 'post_submission_reclassification',
-      description: 'After submission: enquiry will be processed as telephone message workflow',
+      description: 'Reclassify as telephone message',
       trigger: 'Post-submission processing (existing client + existing matter detected)',
       status: hasClaimTime ? 'pending' : 'active',
       data: {
@@ -146,7 +146,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     // Database lookup applies to all telephone message types
     actions.push({
       id: 'callhub_api_lookup',
-      description: 'CallHub API performs database lookup to identify caller',
+      description: 'Database lookup for caller',
       trigger: 'Fires when "Lookup Client" button is pressed',
       status: lookupPressed ? 'complete' : hasContactPhone ? 'pending' : 'pending',
       data: {
@@ -161,7 +161,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
     if (lookupPressed) {
       actions.push({
         id: 'callhub_api_retrieve_data',
-        description: 'CallHub API retrieves caller information and context from database',
+        description: 'Retrieve caller information',
         trigger: 'After successful API lookup',
         status: 'complete',
         data: {
@@ -233,7 +233,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
           id: 'send_teams_message_to_fe',
           description: 'Send Teams notification to fee earner',
           status: 'active',
-          trigger: 'Immediate - parallel with client email',
+          trigger: 'Immediate',
           data: {
             recipient: 'assigned_fee_earner',
             priority: 'normal',
@@ -246,7 +246,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
           id: 'send_sms_with_calendly',
           description: 'Send SMS with Calendly booking link',
           status: 'active',
-          trigger: 'Immediate - within 1 minute of call completion',
+          trigger: 'Within 1 minute',
           data: {
             template: 'existing_client_sms_calendly',
             personalization: 'client_name_matter_ref',
@@ -258,7 +258,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
           id: 'send_teams_message_to_fe',
           description: 'Send Teams notification to fee earner',
           status: 'active',
-          trigger: 'Immediate - parallel with client SMS',
+          trigger: 'Immediate',
           data: {
             recipient: 'assigned_fee_earner',
             priority: 'normal',
@@ -272,9 +272,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
       if (formData.relationship === 'prospect') {
         actions.push({
           id: 'send_email_and_sms',
-          description: 'Launch comprehensive dual-channel prospect communication campaign. Send professionally branded email with firm credentials, area of work expertise, initial consultation offer, and fee structure transparency. Simultaneously send SMS with immediate response option and callback scheduling. Both channels include lead tracking, engagement metrics, and automated follow-up sequences based on prospect behavior.',
+          description: 'Send email + SMS to prospect',
           status: 'active',
-          trigger: 'Immediate - within 3 minutes of call completion',
+          trigger: 'Within 3 minutes',
           data: {
             emailTemplate: 'prospect_consultation_offer',
             smsTemplate: 'prospect_callback_scheduling',
@@ -285,9 +285,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         });
         actions.push({
           id: 'create_hunter_card',
-          description: 'Create comprehensive Hunter CRM prospect card with complete call context, area of work classification, initial needs assessment, contact preferences, and lead scoring. Automatically populate caller details, enquiry specifics, area-specific qualification data, and assign to appropriate fee earner based on expertise matching. Include follow-up task scheduling and lead nurturing workflow activation.',
+          description: 'Create Hunter CRM prospect card',
           status: 'active',
-          trigger: 'Immediate - parallel with communication dispatch',
+          trigger: 'Immediate',
           data: {
             leadScore: 'calculated_from_enquiry_data',
             areaOfWorkMatching: true,
@@ -300,9 +300,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         if (formData.areaOfWork === 'property') {
           actions.push({
             id: 'alert_ac',
-            description: 'Send priority alert to AC (Property Specialist) with complete property enquiry context including property type, transaction value, urgency indicators, and prospect qualification data. Alert includes property-specific assessment criteria, conflict checking requirements, and immediate action recommendations. Specialist receives mobile notification with property enquiry dashboard access and client context summary.',
+            description: 'Alert AC (Property Specialist)',
             status: 'active',
-            trigger: 'Immediate - parallel with prospect communications',
+            trigger: 'Immediate',
             data: {
               specialist: 'AC_Property',
               priority: 'property_enquiry',
@@ -315,9 +315,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         } else if (formData.areaOfWork === 'construction') {
           actions.push({
             id: 'alert_jw',
-            description: 'Send priority alert to JW (Construction Specialist) with comprehensive construction enquiry details including project type, dispute value, adjudication requirements, and contractor/client classification. Alert includes construction-specific risk assessment, adjudication timeline considerations, and expert assignment recommendations. Specialist receives immediate notification with construction enquiry dashboard and project context analysis.',
+            description: 'Alert JW (Construction Specialist)',
             status: 'active',
-            trigger: 'Immediate - parallel with prospect communications',
+            trigger: 'Immediate',
             data: {
               specialist: 'JW_Construction',
               priority: 'construction_enquiry',
@@ -331,9 +331,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         } else {
           actions.push({
             id: 'alert_team',
-            description: 'Send coordinated alert to appropriate legal team based on area of work classification. Alert includes complete enquiry assessment, expertise matching recommendations, capacity checking, and case complexity indicators. Team receives collaborative notification with prospect qualification matrix, fee earner assignment suggestions, and immediate response coordination. System automatically routes to available specialists with relevant experience.',
+            description: 'Alert appropriate legal team',
             status: 'active',
-            trigger: 'Immediate - parallel with prospect communications',
+            trigger: 'Immediate',
             data: {
               teamType: 'area_of_work_specialists',
               areaOfWork: formData.areaOfWork || 'general',
@@ -347,7 +347,7 @@ export const buildActions = (formData: FormData): ActionStep[] => {
       } else {
         actions.push({
           id: 'send_teams_message_to_fe',
-          description: 'Send comprehensive Microsoft Teams notification to assigned fee earner with non-prospect enquiry context including relationship type (opponent, barrister, expert, other), call purpose classification, urgency assessment, and recommended response approach. Message includes caller relationship history, matter context if applicable, and suggested handling protocols based on relationship category.',
+          description: 'Send Teams message to fee earner',
           status: 'active',
           trigger: 'Immediate - within 2 minutes of call completion',
           data: {
@@ -360,9 +360,9 @@ export const buildActions = (formData: FormData): ActionStep[] => {
         });
         actions.push({
           id: 'send_email_to_fe',
-          description: 'Send detailed email summary to assigned fee earner with complete non-prospect enquiry documentation including caller details, relationship classification, enquiry specifics, area of work context, and follow-up requirements. Email includes structured call notes, relationship management recommendations, and next action scheduling with appropriate response timeframes based on caller relationship type.',
+          description: 'Send email summary to fee earner',
           status: 'active',
-          trigger: 'Immediate - parallel with Teams notification',
+          trigger: 'Immediate',
           data: {
             callDocumentation: 'structured_summary',
             relationshipManagement: true,
