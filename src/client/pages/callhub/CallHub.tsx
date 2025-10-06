@@ -86,15 +86,8 @@ const CallHub: React.FC = () => {
         // Don't reset autoReroutedFromClientEnquiry here as it would clear the audit trail
     }, [callKind, autoReroutedFromClientEnquiry]);
 
-    // Helper function to convert client enquiry to message (automatic)
-    const convertClientEnquiryToMessage = () => {
-        // Preserve the separate matter decision for audit trail
-        // isSeparateMatter should remain false (the reason for conversion)
-        setCallKind('message');
-        setEnquiryType('existing');
-        setAutoReroutedFromClientEnquiry(true);
-        setContactPreference(null); // Reset contact preference since it's message flow now
-    };
+    // Note: Existing client + existing matter enquiries will be processed as messages after submission
+    // UI stays in enquiry mode to avoid confusion, but backend handles reclassification
 
     // Helper functions for manual call kind changes
     const handleManualEnquirySelection = () => {
@@ -635,7 +628,7 @@ const CallHub: React.FC = () => {
                                         className={`client-type-icon-btn${isSeparateMatter === false ? ' active' : ''}`}
                                         onClick={() => {
                                             setIsSeparateMatter(false);
-                                            convertClientEnquiryToMessage();
+                                            setAutoReroutedFromClientEnquiry(true); // Flag for post-submission processing
                                         }}
                                     >
                                         <span className="client-type-label">No - Existing Matter</span>
@@ -651,7 +644,7 @@ const CallHub: React.FC = () => {
                                         fontSize: '14px',
                                         color: '#8a6d00'
                                     }}>
-                                        📞 <strong>Reclassified:</strong> This enquiry has been automatically converted to a telephone message workflow for existing client matters.
+                                        ℹ️ <strong>Note:</strong> This will be processed as a telephone message after submission (existing client + existing matter).
                                     </div>
                                 )}
                             </div>
