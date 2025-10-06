@@ -444,13 +444,6 @@ const CallHub: React.FC = () => {
                                     {missingEmail && (
                                         <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
                                     )}
-
-                                    <Dropdown
-                                        label="Which best describes caller?"
-                                        options={callerOptions}
-                                        selectedKey={callerCategory}
-                                        onChange={(_, o) => setCallerCategory(o?.key as string)}
-                                    />
                                 </Stack>
                             </div>
                         )}
@@ -643,6 +636,18 @@ const CallHub: React.FC = () => {
 
                         {callKind === 'message' && (
                                     <>
+                                        <Dropdown
+                                            label="Which best describes caller?"
+                                            options={callerOptions}
+                                            selectedKey={callerCategory}
+                                            onChange={(_, o) => setCallerCategory(o?.key as string)}
+                                        />
+                                        
+                                        <TextField
+                                            label="File Reference (if known)"
+                                            value={messageFrom}
+                                            onChange={(_, v) => setMessageFrom(v || '')}
+                                        />
 
                                         <Dropdown
                                             label="Message for"
