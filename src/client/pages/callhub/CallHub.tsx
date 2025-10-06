@@ -15,7 +15,6 @@ import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 import LogicTree from './LogicTree.tsx';
 import JsonPreview from './JsonPreview.tsx';
-import { sendClientBookingEmail, createClientBookingEmail } from './emailTemplates';
 
 const CallHub: React.FC = () => {
     // Core call data
@@ -46,8 +45,6 @@ const CallHub: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [saveSuccess, setSaveSuccess] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
-    const [emailPreview, setEmailPreview] = useState<string | null>(null);
 
     const [teamMember, setTeamMember] = useState<string | undefined>();
     const [ccTeamMember, setCcTeamMember] = useState('');
@@ -165,13 +162,6 @@ const CallHub: React.FC = () => {
                 callerLastName: lastName,
                 claimTime: now,
             });
-            
-            // Send email template for existing clients who prefer email contact
-            // Condition: New enquiry + Client + New Matter + Email preference
-            if (callKind === 'enquiry' && isClient === true && isSeparateMatter === true && contactPreference === 'email') {
-                console.log('Triggering client email template...');
-                await sendClientEmailTemplate();
-            }
         } catch (err) {
             console.error(err);
         }
@@ -281,30 +271,6 @@ const CallHub: React.FC = () => {
     const formatDuration = (start: number, end: number) => {
         const ms = end - start;
         return `${(ms / 1000 / 60).toFixed(1)} mins`;
-    };
-
-    const sendClientEmailTemplate = async () => {
-        try {
-            // Create email template for preview
-            const template = createClientBookingEmail({
-                firstName,
-                email
-            });
-            
-            // Set preview content
-            setEmailPreview(template.html);
-            
-            // Send email (demo version)
-            await sendClientBookingEmail({
-                firstName,
-                email
-            });
-            
-            setEmailSent(true);
-            console.log(`✅ Client email sent to ${firstName} at ${email}`);
-        } catch (error) {
-            console.error('Failed to send client email:', error);
-        }
     };
 
     const missingEmail = (callKind === 'enquiry' || contactPreference === 'email') && !email;
@@ -859,8 +825,6 @@ const CallHub: React.FC = () => {
                                     setSaving(false);
                                     setSaveError(null);
                                     setSaveSuccess(false);
-                                    setEmailSent(false);
-                                    setEmailPreview(null);
                                     setTeamMember(undefined);
                                     setCcTeamMember('');
                                     setUrgent(false);
@@ -913,62 +877,6 @@ const CallHub: React.FC = () => {
                             <MessageBar messageBarType={MessageBarType.success} onDismiss={() => setSaveSuccess(false)}>
                                 Call saved
                             </MessageBar>
-                        )}
-                        {emailSent && (
-                            <MessageBar messageBarType={MessageBarType.success} onDismiss={() => setEmailSent(false)}>
-                                ✅ Client email sent with booking link!
-                            </MessageBar>
-                        )}
-                        {emailPreview && (
-                            <div style={{
-                                marginTop: '20px',
-                                border: '2px solid #3690CE',
-                                borderRadius: '8px',
-                                backgroundColor: '#f8f9fa'
-                            }}>
-                                <div style={{
-                                    padding: '12px 16px',
-                                    backgroundColor: '#3690CE',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    borderRadius: '6px 6px 0 0',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
-                                    📧 Email Preview - Sent to {firstName}
-                                    <button 
-                                        onClick={() => setEmailPreview(null)}
-                                        style={{
-                                            background: 'rgba(255,255,255,0.2)',
-                                            border: 'none',
-                                            color: 'white',
-                                            borderRadius: '4px',
-                                            padding: '4px 8px',
-                                            cursor: 'pointer',
-                                            fontSize: '12px'
-                                        }}
-                                    >
-                                        ✕ Close
-                                    </button>
-                                </div>
-                                <div style={{
-                                    maxHeight: '400px',
-                                    overflow: 'auto',
-                                    padding: '0'
-                                }}>
-                                    <div 
-                                        dangerouslySetInnerHTML={{ __html: emailPreview }}
-                                        style={{
-                                            transform: 'scale(0.8)',
-                                            transformOrigin: 'top left',
-                                            width: '125%',
-                                            margin: '0',
-                                            padding: '10px'
-                                        }}
-                                    />
-                                </div>
-                            </div>
                         )}
                         {saveError && (
                             <MessageBar messageBarType={MessageBarType.error} onDismiss={() => setSaveError(null)}>
