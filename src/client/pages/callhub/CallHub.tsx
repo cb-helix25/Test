@@ -503,6 +503,52 @@ const CallHub: React.FC = () => {
                                             </div>
                                         </div>
                                     )}
+
+                                    {(callKind === 'enquiry' || contactPreference === 'email') && (
+                                        <TextField
+                                            label="Email"
+                                            value={email}
+                                            onChange={(_, v) => setEmail(v || '')}
+                                            required={callKind === 'enquiry' || contactPreference === 'email'}
+                                            description=
+                                                {callKind === 'enquiry'
+                                                    ? 'Decline enquiry if prospect refuses to give email address unless they genuinely do not have one.'
+                                                    : undefined}
+                                        />
+                                    )}
+
+                                    {callKind === 'enquiry' && (
+                                        <div>
+                                            <Label>
+                                                How did they initially contact us?
+                                            </Label>
+                                            <div className="client-type-selection">
+                                                <div
+                                                    className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
+                                                    onClick={() => setInitialContactMethod('email')}
+                                                >
+                                                    <span className="client-type-label">Email</span>
+                                                </div>
+                                                <div
+                                                    className={`client-type-icon-btn${initialContactMethod === 'phone' ? ' active' : ''}`}
+                                                    onClick={() => setInitialContactMethod('phone')}
+                                                >
+                                                    <span className="client-type-label">Phone</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {missingEmail && (
+                                        <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
+                                    )}
+
+                                    <Dropdown
+                                        label="Which best describes caller?"
+                                        options={callerOptions}
+                                        selectedKey={callerCategory}
+                                        onChange={(_, o) => setCallerCategory(o?.key as string)}
+                                    />
                                 </Stack>
                             </div>
                         )}
@@ -693,111 +739,7 @@ const CallHub: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Caller Details - Always shown after client/non-client selection or auto-reroute */}
-                        {(isClient !== null || autoReroutedFromClientEnquiry) && (
-                            <>
-                                <Stack horizontal tokens={{ childrenGap: 8 }}>
-                                    <TextField
-                                        label="First Name *"
-                                        value={firstName}
-                                        onChange={(_, v) => setFirstName(v || '')}
-                                        required
-                                    />
-                                    <TextField
-                                        label="Last Name *"
-                                        value={lastName}
-                                        onChange={(_, v) => setLastName(v || '')}
-                                        required
-                                    />
-                                </Stack>
-
-                                <Stack tokens={{ childrenGap: 8 }}>
-                                    <Stack horizontal tokens={{ childrenGap: 8 }}>
-                                        <Dropdown
-                                            label="Code"
-                                            selectedKey={countryCode}
-                                            options={countryCodeOptions}
-                                            onChange={(_, o) => setCountryCode(o?.key as string)}
-                                            styles={{ dropdown: { width: 110 } }}
-                                        />
-                                        <TextField
-                                            label="Phone Number"
-                                            value={contactPhone}
-                                            onChange={(_, v) => setContactPhone(v || '')}
-                                        />
-                                        <PrimaryButton
-                                            text="Lookup Client"
-                                            onClick={handleLookup}
-                                            disabled={!(callKind === 'message' || (callKind === 'enquiry' && !email))}
-                                        />
-                                    </Stack>
-                                    {lookupStatus && (
-                                        <MessageBar messageBarType={MessageBarType.warning}>{lookupStatus}</MessageBar>
-                                    )}
-                                    {clientInfo && (
-                                        <div>
-                                            <div>
-                                                <strong>Point of Contact:</strong> {clientInfo.name} ({clientInfo.email})
-                                            </div>
-                                            <div>
-                                                <strong>Matters</strong>
-                                                <ul>
-                                                    {clientInfo.matters.map(m => (
-                                                        <li key={m}>{m}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    )}
-                                </Stack>
-
-                                {(callKind === 'enquiry' || contactPreference === 'email') && (
-                                    <TextField
-                                        label="Email"
-                                        value={email}
-                                        onChange={(_, v) => setEmail(v || '')}
-                                        required={callKind === 'enquiry' || contactPreference === 'email'}
-                                        description=
-                                            {callKind === 'enquiry'
-                                                ? 'Decline enquiry if prospect refuses to give email address unless they genuinely do not have one.'
-                                                : undefined}
-                                    />
-                                )}
-
-                                {callKind === 'enquiry' && (
-                                    <div>
-                                        <Label>
-                                            How did they initially contact us?
-                                        </Label>
-                                        <div className="client-type-selection">
-                                            <div
-                                                className={`client-type-icon-btn${initialContactMethod === 'email' ? ' active' : ''}`}
-                                                onClick={() => setInitialContactMethod('email')}
-                                            >
-                                                <span className="client-type-label">Email</span>
-                                            </div>
-                                            <div
-                                                className={`client-type-icon-btn${initialContactMethod === 'phone' ? ' active' : ''}`}
-                                                onClick={() => setInitialContactMethod('phone')}
-                                            >
-                                                <span className="client-type-label">Phone</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {missingEmail && (
-                                    <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
-                                )}
-
-                                <Dropdown
-                                    label="Which best describes caller?"
-                                    options={callerOptions}
-                                    selectedKey={callerCategory}
-                                    onChange={(_, o) => setCallerCategory(o?.key as string)}
-                                />
-
-                                {callKind === 'message' && (
+                        {callKind === 'message' && (
                                     <>
 
                                         <Dropdown
@@ -1049,8 +991,6 @@ const CallHub: React.FC = () => {
                             <MessageBar messageBarType={MessageBarType.error} onDismiss={() => setSaveError(null)}>
                                 {saveError}
                             </MessageBar>
-                        )}
-                            </>
                         )}
                     </Stack>
                 </div>
