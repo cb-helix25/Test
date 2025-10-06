@@ -25,6 +25,7 @@ const CallHub: React.FC = () => {
     const [contactPhone, setContactPhone] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [country, setCountry] = useState('');
     const [notes, setNotes] = useState('');
     const [countryCode, setCountryCode] = useState('+44');
     
@@ -292,6 +293,7 @@ const CallHub: React.FC = () => {
         relationship,
         firstName,
         lastName,
+        country,
         email,
         contactPhone,
         countryCode,
@@ -385,6 +387,11 @@ const CallHub: React.FC = () => {
                                             value={lastName}
                                             onChange={(_, v) => setLastName(v || '')}
                                             required
+                                        />
+                                        <TextField
+                                            label="Country"
+                                            value={country}
+                                            onChange={(_, v) => setCountry(v || '')}
                                         />
                                     </Stack>
 
@@ -804,6 +811,7 @@ const CallHub: React.FC = () => {
                                     setContactPhone('');
                                     setFirstName('');
                                     setLastName('');
+                                    setCountry('');
                                     setNotes('');
                                     setCountryCode('+44');
                                     setIsClient(null);
