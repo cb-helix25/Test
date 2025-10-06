@@ -443,6 +443,77 @@ const CallHub: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* === CALLER DETAILS SECTION === */}
+                        {callKind && (
+                            <div style={{ 
+                                padding: '20px', 
+                                border: '1px solid #e1e5e9', 
+                                borderRadius: '8px',
+                                backgroundColor: '#f8f9fa' 
+                            }}>
+                                <h3 style={{ margin: '0 0 16px 0', color: '#323130', fontSize: '16px', fontWeight: 600 }}>
+                                    👤 Caller Details
+                                </h3>
+                                
+                                <Stack tokens={{ childrenGap: 16 }}>
+                                    <Stack horizontal tokens={{ childrenGap: 8 }}>
+                                        <TextField
+                                            label="First Name *"
+                                            value={firstName}
+                                            onChange={(_, v) => setFirstName(v || '')}
+                                            required
+                                        />
+                                        <TextField
+                                            label="Last Name *"
+                                            value={lastName}
+                                            onChange={(_, v) => setLastName(v || '')}
+                                            required
+                                        />
+                                    </Stack>
+
+                                    <Stack horizontal tokens={{ childrenGap: 8 }}>
+                                        <Dropdown
+                                            label="Code"
+                                            selectedKey={countryCode}
+                                            options={countryCodeOptions}
+                                            onChange={(_, o) => setCountryCode(o?.key as string)}
+                                            styles={{ dropdown: { width: 110 } }}
+                                        />
+                                        <TextField
+                                            label="Phone Number"
+                                            value={contactPhone}
+                                            onChange={(_, v) => setContactPhone(v || '')}
+                                        />
+                                        <PrimaryButton
+                                            text="Lookup Client"
+                                            onClick={handleLookup}
+                                            disabled={!(callKind === 'message' || (callKind === 'enquiry' && !email))}
+                                        />
+                                    </Stack>
+                                    
+                                    {lookupStatus && (
+                                        <MessageBar messageBarType={MessageBarType.warning}>{lookupStatus}</MessageBar>
+                                    )}
+                                    
+                                    {clientInfo && (
+                                        <div>
+                                            <div>
+                                                <strong>Point of Contact:</strong> {clientInfo.name} ({clientInfo.email})
+                                            </div>
+                                            <div>
+                                                <strong>Matters</strong>
+                                                <ul>
+                                                    {clientInfo.matters.map(m => (
+                                                        <li key={m}>{m}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Stack>
+                            </div>
+                        )}
+
                         {callKind && (
                             <>
                                 {/* Message Type Selection */}
