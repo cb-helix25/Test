@@ -852,7 +852,7 @@ const CallHub: React.FC = () => {
                                     setAutoReroutedFromClientEnquiry(false);
                                 }} 
                             />
-                            <PrimaryButton text="Claim Enquiry" onClick={handleClaim} disabled={!!claimTime} />
+                            <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime} />
                             <PrimaryButton text="Mark Contacted" onClick={handleContacted} disabled={!claimTime || !!contactTime} />
                             <PrimaryButton
                                 text="Abandon Call"
@@ -860,7 +860,7 @@ const CallHub: React.FC = () => {
                                 disabled={!claimTime || !!contactTime || !!abandonTime}
                             />
                             <PrimaryButton text="Save Call" onClick={handleSave} disabled={!canSave} />
-                            <PrimaryButton text="Submit" onClick={handleSave} disabled={!canSave} />
+                            <PrimaryButton text="Claim Enquiry" onClick={handleSave} disabled={!canSave} />
                         </Stack>
 
                         {claimTime && <div>Claimed at {new Date(claimTime).toLocaleTimeString()}</div>}
