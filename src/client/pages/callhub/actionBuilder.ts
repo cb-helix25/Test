@@ -71,20 +71,21 @@ export interface FormData {
 export const buildActions = (formData: FormData): ActionStep[] => {
   const actions: ActionStep[] = [];
   
-  // Handle rerouted client enquiries (existing client, existing matter)
-  if (formData.isClient === true && formData.isSeparateMatter === false && formData.autoReroutedFromClientEnquiry) {
+  // Handle enquiries that will be processed as messages (existing client, existing matter)
+  if (formData.callKind === 'enquiry' && formData.isClient === true && formData.isSeparateMatter === false && formData.autoReroutedFromClientEnquiry) {
     const hasClaimTime = formData.claimTime !== null;
     const hasTeamMember = Boolean(formData.teamMember);
     
     actions.push({
-      id: 'enquiry_reclassified',
-      description: 'Client enquiry reclassified as telephone message',
-      trigger: 'Existing client calling about existing matter',
-      status: 'complete',
+      id: 'post_submission_reclassification',
+      description: 'After submission: enquiry will be processed as telephone message workflow',
+      trigger: 'Post-submission processing (existing client + existing matter detected)',
+      status: hasClaimTime ? 'pending' : 'active',
       data: {
-        originalCallKind: 'enquiry',
-        reclassifiedAs: 'message',
-        reason: 'existing_client_existing_matter'
+        uiFlow: 'enquiry',
+        processingFlow: 'message',
+        reason: 'existing_client_existing_matter',
+        note: 'UI stays in enquiry mode to avoid operator confusion'
       }
     });
     
