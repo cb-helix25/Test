@@ -1,51 +1,5 @@
-// Azure Function configuration interface
-interface AzureFunctionConfig {
-  endpoint: string;
-  functionKey?: string;
-  hostKey?: string;
-  clientId?: string;
-  authToken?: string;
-}
-
+// Azure Function endpoint - no authentication needed from client
 const AZURE_FUNCTION_ENDPOINT = 'https://web-form-endpoints.azurewebsites.net/api/incoming-calls';
-
-// Function to fetch secret directly from Azure Key Vault via proxy function
-async function getKeyVaultSecret(secretName: string): Promise<string> {
-  try {
-    console.log(`🔐 Fetching secret '${secretName}' from Key Vault...`);
-    
-    // Call Azure Function that acts as Key Vault proxy
-    const keyVaultProxyUrl = 'https://web-form-endpoints.azurewebsites.net/api/get-secret';
-    
-    const response = await fetch(keyVaultProxyUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        secretName: secretName,
-        keyVaultUrl: 'https://secret-keys-helix.vault.azure.net/'
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Key Vault proxy failed: ${response.status} ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    
-    if (!result.value) {
-      throw new Error('Secret value not found in Key Vault response');
-    }
-
-    console.log('✅ Successfully retrieved secret from Key Vault');
-    return result.value;
-    
-  } catch (error) {
-    console.error('❌ Failed to retrieve secret from Key Vault:', error);
-    throw new Error(`Unable to fetch secret from Key Vault: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
 
 // External API schema interface
 export interface ExternalCallSchema {
@@ -192,45 +146,7 @@ export const mapFormDataToExternalSchema = (formData: FormData): ExternalCallSch
   };
 };
 
-/**
- * Builds headers for Azure Function authentication
- */
-const buildAuthHeaders = (config: AzureFunctionConfig): HeadersInit => {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
 
-  // Function Key authentication (most common for HTTP triggers)
-  if (config.functionKey) {
-    headers['x-functions-key'] = config.functionKey;
-  }
-  
-  // Host Key authentication (admin level)
-  if (config.hostKey) {
-    headers['x-functions-key'] = config.hostKey;
-  }
-
-  // Bearer token authentication (AAD/OAuth)
-  if (config.authToken) {
-    headers['Authorization'] = `Bearer ${config.authToken}`;
-  }
-
-  return headers;
-};
-
-/**
- * Builds the full URL with query parameters for key-based auth
- */
-const buildUrlWithAuth = (config: AzureFunctionConfig): string => {
-  const url = new URL(config.endpoint);
-  
-  // Some Azure Functions expect the key as a query parameter
-  if (config.functionKey) {
-    url.searchParams.append('code', config.functionKey);
-  }
-  
-  return url.toString();
-};
 
 /**
  * Sends form data to Azure Function endpoint with proper authentication
@@ -239,18 +155,12 @@ export const sendToAzureFunction = async (formData: FormData): Promise<void> => 
   const externalData = mapFormDataToExternalSchema(formData);
   
   try {
-    // Get function key from environment variable (set in Azure Static Web App configuration)
-    const functionKey = await getKeyVaultSecret('incomingfunctionkey');
-    
-    // Create config with retrieved key
-    const azureConfig: AzureFunctionConfig = {
-      endpoint: AZURE_FUNCTION_ENDPOINT,
-      functionKey: functionKey
+    // Simple call to Azure Function - no authentication needed from client side
+    // The Azure Function will handle its own Key Vault access internally
+    const requestUrl = AZURE_FUNCTION_ENDPOINT;
+    const headers = {
+      'Content-Type': 'application/json',
     };
-    
-    // Build URL and headers with authentication
-    const requestUrl = buildUrlWithAuth(azureConfig);
-    const headers = buildAuthHeaders(azureConfig);
     
     console.log('🚀 Sending to Azure Function:', requestUrl);
     console.log('📦 Payload:', externalData);
