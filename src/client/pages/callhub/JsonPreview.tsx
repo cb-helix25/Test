@@ -104,8 +104,6 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ formData }) => {
       // Tracking Information
       tracking: {
         claimTime: formData.claimTime,
-        contactTime: formData.contactTime,
-        abandonTime: formData.abandonTime,
       }
     };
 

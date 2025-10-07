@@ -27,8 +27,6 @@ export interface FormData {
   
   // System tracking
   claimTime: number | null;
-  contactTime: number | null;
-  abandonTime: number | null;
   clientInfo?: any; // Client lookup result data
   
   // Form fields

@@ -15,7 +15,6 @@ import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 import LogicTree from './LogicTree.tsx';
 import JsonPreview from './JsonPreview.tsx';
-import { sendToAzureFunction, previewMappedData } from './dataMapping';
 
 const CallHub: React.FC = () => {
     // Core call data
@@ -41,9 +40,6 @@ const CallHub: React.FC = () => {
     const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
     const [lookupStatus, setLookupStatus] = useState<string | null>(null);
     const [claimTime, setClaimTime] = useState<number | null>(null);
-    const [contactTime, setContactTime] = useState<number | null>(null);
-    const [abandonTime, setAbandonTime] = useState<number | null>(null);
-    const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [azureFunctionSent, setAzureFunctionSent] = useState(false);
@@ -170,116 +166,6 @@ const CallHub: React.FC = () => {
         }
     };
 
-    const handleContacted = async () => {
-        if (!claimTime) return;
-        const now = Date.now();
-        setContactTime(now);
-        try {
-            await sendCallEvent({
-                action: 'contact',
-                callKind,
-                enquiryType,
-                contactPreference,
-                email,
-                contactPhone,
-                callerFirstName: firstName,
-                callerLastName: lastName,
-                claimTime,
-                contactTime: now,
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleAbandon = async () => {
-        if (!claimTime) return;
-        const now = Date.now();
-        setAbandonTime(now);
-        try {
-            await sendCallEvent({
-                action: 'abandon',
-                callKind,
-                enquiryType,
-                contactPreference,
-                email,
-                contactPhone,
-                callerFirstName: firstName,
-                callerLastName: lastName,
-                claimTime,
-                abandonTime: now,
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleSave = async () => {
-        setSaving(true);
-        setSaveError(null);
-        setSaveSuccess(false);
-        try {
-            await sendCallEvent({
-                action: 'save',
-                callKind,
-                enquiryType,
-                contactPreference,
-                email,
-                contactPhone,
-                callerFirstName: firstName,
-                callerLastName: lastName,
-                notes,
-                claimTime,
-                contactTime,
-                abandonTime,
-                teamMember,
-                ccTeamMember,
-                urgent,
-                urgentReason,
-                callerCategory,
-                messageFrom,
-                areaOfWork,
-                heardAboutUs,
-                searchTerm,
-                webPageVisited,
-                // Note: New area-specific fields are captured in formData for UI components
-                // but not yet sent to backend until API is updated
-            });
-            setSaveSuccess(true);
-            
-            // Send data to Azure Function after successful save
-            try {
-                await sendToAzureFunction({
-                    firstName,
-                    lastName,
-                    email,
-                    contactPhone,
-                    countryCode,
-                    notes,
-                    areaOfWork,
-                    propertyDescription,
-                    constructionDescription,
-                    callerCategory,
-                    propertyValue,
-                    briefSummary,
-                    callKind,
-                    isClient,
-                    contactPreference
-                });
-                setAzureFunctionSent(true);
-                setAzureFunctionError(null);
-            } catch (azureError: any) {
-                console.error('Azure Function error:', azureError);
-                setAzureFunctionError(azureError.message || 'Failed to send to Azure Function');
-                setAzureFunctionSent(false);
-            }
-        } catch (err: any) {
-            setSaveError(err.message || 'Unable to save call');
-        } finally {
-            setSaving(false);
-        }
-    };
-
     const handleLookup = async () => {
         setLookupStatus(null);
         try {
@@ -298,44 +184,7 @@ const CallHub: React.FC = () => {
         }
     };
 
-    const formatDuration = (start: number, end: number) => {
-        const ms = end - start;
-        return `${(ms / 1000 / 60).toFixed(1)} mins`;
-    };
-
-    const handlePreviewMapping = () => {
-        const mappedData = previewMappedData({
-            firstName,
-            lastName,
-            email,
-            contactPhone,
-            countryCode,
-            notes,
-            areaOfWork,
-            propertyDescription,
-            constructionDescription,
-            callerCategory,
-            propertyValue,
-            briefSummary,
-            callKind,
-            isClient,
-            contactPreference
-        });
-        console.log('📋 Preview of mapped data for Azure Function:', mappedData);
-        alert('Check console for mapped data preview');
-    };
-
     const missingEmail = (callKind === 'enquiry' || contactPreference === 'email') && !email;
-    const canSave =
-        !!callKind &&
-        (callKind !== 'message' || !!enquiryType) &&
-        (callKind === 'message' || !!contactPreference) && // Messages don't need contact preference
-        !!contactPhone &&
-        !!firstName &&
-        !!lastName &&
-        !missingEmail &&
-        !saving &&
-        !abandonTime;
 
     // Prepare form data for components
     const formData = {
@@ -352,8 +201,6 @@ const CallHub: React.FC = () => {
         areaOfWork: areaOfWork || null,
         notes,
         claimTime,
-        contactTime,
-        abandonTime,
         callKind,
         enquiryType,
         callerCategory,
@@ -872,9 +719,6 @@ const CallHub: React.FC = () => {
                                     setClientInfo(null);
                                     setLookupStatus(null);
                                     setClaimTime(null);
-                                    setContactTime(null);
-                                    setAbandonTime(null);
-                                    setSaving(false);
                                     setSaveError(null);
                                     setSaveSuccess(false);
                                     setAzureFunctionSent(false);
@@ -907,27 +751,9 @@ const CallHub: React.FC = () => {
                                 }} 
                             />
                             <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime} />
-                            <PrimaryButton text="Mark Contacted" onClick={handleContacted} disabled={!claimTime || !!contactTime} />
-                            <PrimaryButton
-                                text="Abandon Call"
-                                onClick={handleAbandon}
-                                disabled={!claimTime || !!contactTime || !!abandonTime}
-                            />
-                            <PrimaryButton text="Save Call" onClick={handleSave} disabled={!canSave} />
-                            <PrimaryButton text="Claim Enquiry" onClick={handleSave} disabled={!canSave} />
-                            <PrimaryButton text="Preview Mapping" onClick={handlePreviewMapping} />
                         </Stack>
 
                         {claimTime && <div>Claimed at {new Date(claimTime).toLocaleTimeString()}</div>}
-                        {claimTime && contactTime && (
-                            <div>Time to contact: {formatDuration(claimTime, contactTime)}</div>
-                        )}
-                        {claimTime && abandonTime && (
-                            <div>Time to abandon: {formatDuration(claimTime, abandonTime)}</div>
-                        )}
-                        {abandonTime && (
-                            <div>Abandoned at {new Date(abandonTime).toLocaleTimeString()}</div>
-                        )}
                         {saveSuccess && (
                             <MessageBar messageBarType={MessageBarType.success} onDismiss={() => setSaveSuccess(false)}>
                                 Call saved

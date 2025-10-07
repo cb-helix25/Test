@@ -13,8 +13,6 @@ export interface CallEvent {
     callerLastName?: string;
     notes?: string;
     claimTime?: number | null;
-    contactTime?: number | null;
-    abandonTime?: number | null;
     teamMember?: string;
     ccTeamMember?: string;
     urgent?: boolean;
