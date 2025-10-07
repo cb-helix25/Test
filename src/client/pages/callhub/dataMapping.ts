@@ -9,22 +9,41 @@ interface AzureFunctionConfig {
 
 const AZURE_FUNCTION_ENDPOINT = 'https://web-form-endpoints.azurewebsites.net/api/incoming-calls';
 
-// Function to get secret (in production, this would be set via Azure Static Web App configuration)
-async function getKeyVaultSecret(_secretName: string): Promise<string> {
+// Function to fetch secret directly from Azure Key Vault via proxy function
+async function getKeyVaultSecret(secretName: string): Promise<string> {
   try {
-    // In Azure Static Web Apps, environment variables are available during build
-    // The actual Key Vault integration would be handled by the deployment pipeline
-    const functionKey = (import.meta as any).env?.VITE_AZURE_FUNCTION_KEY;
+    console.log(`🔐 Fetching secret '${secretName}' from Key Vault...`);
     
-    if (!functionKey) {
-      throw new Error(`Azure Function key not found. Please configure VITE_AZURE_FUNCTION_KEY environment variable in Azure Static Web App settings.`);
+    // Call Azure Function that acts as Key Vault proxy
+    const keyVaultProxyUrl = 'https://web-form-endpoints.azurewebsites.net/api/get-secret';
+    
+    const response = await fetch(keyVaultProxyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        secretName: secretName,
+        keyVaultUrl: 'https://secret-keys-helix.vault.azure.net/'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Key Vault proxy failed: ${response.status} ${response.statusText}`);
     }
+
+    const result = await response.json();
     
-    console.log('✅ Retrieved function key from configuration');
-    return functionKey;
+    if (!result.value) {
+      throw new Error('Secret value not found in Key Vault response');
+    }
+
+    console.log('✅ Successfully retrieved secret from Key Vault');
+    return result.value;
+    
   } catch (error) {
-    console.error('❌ Failed to retrieve function key:', error);
-    throw new Error('Unable to authenticate with Azure Function - check environment configuration');
+    console.error('❌ Failed to retrieve secret from Key Vault:', error);
+    throw new Error(`Unable to fetch secret from Key Vault: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

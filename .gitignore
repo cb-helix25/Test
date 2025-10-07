@@ -177,3 +177,6 @@ $RECYCLE.BIN/
 # Application specific
 # Add any application-specific files or directories here
 *.local
+
+# Local environment variables
+.env
