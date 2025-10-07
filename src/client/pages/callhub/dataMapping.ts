@@ -1,4 +1,32 @@
-import { AZURE_CONFIG, type AzureFunctionConfig } from './azureConfig';
+// Azure Function configuration interface
+interface AzureFunctionConfig {
+  endpoint: string;
+  functionKey?: string;
+  hostKey?: string;
+  clientId?: string;
+  authToken?: string;
+}
+
+const AZURE_FUNCTION_ENDPOINT = 'https://web-form-endpoints.azurewebsites.net/api/incoming-calls';
+
+// Function to get secret (in production, this would be set via Azure Static Web App configuration)
+async function getKeyVaultSecret(_secretName: string): Promise<string> {
+  try {
+    // In Azure Static Web Apps, environment variables are available during build
+    // The actual Key Vault integration would be handled by the deployment pipeline
+    const functionKey = (import.meta as any).env?.VITE_AZURE_FUNCTION_KEY;
+    
+    if (!functionKey) {
+      throw new Error(`Azure Function key not found. Please configure VITE_AZURE_FUNCTION_KEY environment variable in Azure Static Web App settings.`);
+    }
+    
+    console.log('✅ Retrieved function key from configuration');
+    return functionKey;
+  } catch (error) {
+    console.error('❌ Failed to retrieve function key:', error);
+    throw new Error('Unable to authenticate with Azure Function - check environment configuration');
+  }
+}
 
 // External API schema interface
 export interface ExternalCallSchema {
@@ -192,9 +220,18 @@ export const sendToAzureFunction = async (formData: FormData): Promise<void> => 
   const externalData = mapFormDataToExternalSchema(formData);
   
   try {
+    // Get function key from environment variable (set in Azure Static Web App configuration)
+    const functionKey = await getKeyVaultSecret('incomingfunctionkey');
+    
+    // Create config with retrieved key
+    const azureConfig: AzureFunctionConfig = {
+      endpoint: AZURE_FUNCTION_ENDPOINT,
+      functionKey: functionKey
+    };
+    
     // Build URL and headers with authentication
-    const requestUrl = buildUrlWithAuth(AZURE_CONFIG);
-    const headers = buildAuthHeaders(AZURE_CONFIG);
+    const requestUrl = buildUrlWithAuth(azureConfig);
+    const headers = buildAuthHeaders(azureConfig);
     
     console.log('🚀 Sending to Azure Function:', requestUrl);
     console.log('📦 Payload:', externalData);

@@ -177,6 +177,3 @@ $RECYCLE.BIN/
 # Application specific
 # Add any application-specific files or directories here
 *.local
-
-# Azure Function Configuration (contains sensitive keys)
-src/client/pages/callhub/azureConfig.ts
