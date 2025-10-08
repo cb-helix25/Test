@@ -329,13 +329,13 @@ const CallHub: React.FC = () => {
                                 <Stack tokens={{ childrenGap: 16 }}>
                                     <Stack horizontal tokens={{ childrenGap: 8 }}>
                                         <TextField
-                                            label="First Name *"
+                                            label="First Name"
                                             value={firstName}
                                             onChange={(_, v) => setFirstName(v || '')}
                                             required
                                         />
                                         <TextField
-                                            label="Last Name *"
+                                            label="Last Name"
                                             value={lastName}
                                             onChange={(_, v) => setLastName(v || '')}
                                             required
