@@ -89,19 +89,68 @@ const CallHub: React.FC = () => {
     // Note: Existing client + existing matter enquiries will be processed as messages after submission
     // UI stays in enquiry mode to avoid confusion, but backend handles reclassification
 
+    // Helper function to reset form while preserving caller details
+    const resetFormPreservingCallerDetails = () => {
+        // Reset call-type specific fields but preserve caller details
+        setEnquiryType(null);
+        setContactPreference(null);
+        setIsClient(null);
+        setRelationship(null);
+        setInitialContactMethod(null);
+        setIsSeparateMatter(null);
+        setAutoReroutedFromClientEnquiry(false);
+        
+        // Reset message-specific fields
+        setTeamMember(undefined);
+        setCcTeamMember('');
+        setUrgent(false);
+        setUrgentReason('');
+        setMessageFrom(undefined);
+        
+        // Reset enquiry-specific fields
+        setAreaOfWork(undefined);
+        setHeardAboutUs(undefined);
+        setSearchTerm('');
+        setWebPageVisited('');
+        setBriefSummary('');
+        setCallerCategory(undefined);
+        
+        // Reset area-specific fields
+        setPropertyDescription(undefined);
+        setPropertyValue(undefined);
+        setPropertyInterest(undefined);
+        setEmploymentDescription(undefined);
+        setConstructionDescription(undefined);
+        setConstructionValue(undefined);
+        setAdjudicationEnquiry(undefined);
+        setCommercialValue(undefined);
+        setCommercialDescription(undefined);
+        setUrgentAssistance(undefined);
+        
+        // Reset system state (but keep caller lookup results)
+        setLookupStatus(null);
+        setClaimTime(null);
+        setSaveError(null);
+        setSaveSuccess(false);
+        setAzureFunctionSent(false);
+        setAzureFunctionError(null);
+        
+        // Reset notes
+        setNotes('');
+        
+        // NOTE: Caller details are preserved:
+        // - firstName, lastName, country, countryCode, contactPhone, email, clientInfo
+    };
+
     // Helper functions for manual call kind changes
     const handleManualEnquirySelection = () => {
         setCallKind('enquiry');
-        // Reset reclassification flags for manual selection
-        setIsSeparateMatter(null);
-        setAutoReroutedFromClientEnquiry(false);
+        resetFormPreservingCallerDetails();
     };
 
     const handleManualMessageSelection = () => {
         setCallKind('message');
-        // Reset reclassification flags for manual selection
-        setIsSeparateMatter(null);
-        setAutoReroutedFromClientEnquiry(false);
+        resetFormPreservingCallerDetails();
     };
 
     const countryCodeOptions: IDropdownOption[] = [
@@ -184,7 +233,11 @@ const CallHub: React.FC = () => {
         }
     };
 
-    const missingEmail = (callKind === 'enquiry' || contactPreference === 'email') && !email;
+    // Email validation: always required when business logic requires it, but only validated as email format if @ is present
+    const emailRequiredByFlow = (callKind === 'enquiry' || contactPreference === 'email');
+    const missingEmail = emailRequiredByFlow && !email;
+    const hasAtSymbol = email.includes('@');
+    const invalidEmailFormat = hasAtSymbol && email && (!email.includes('.') || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/));
 
     // Prepare form data for components
     const formData = {
@@ -319,17 +372,83 @@ const CallHub: React.FC = () => {
                                     )}
                                     
                                     {clientInfo && (
-                                        <div>
-                                            <div>
-                                                <strong>Point of Contact:</strong> {clientInfo.name} ({clientInfo.email})
+                                        <div style={{ 
+                                            marginTop: '16px',
+                                            padding: '16px', 
+                                            backgroundColor: '#f0f9ff', 
+                                            border: '2px solid #0ea5e9',
+                                            borderRadius: '8px',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                marginBottom: '12px',
+                                                fontSize: '14px',
+                                                fontWeight: 600,
+                                                color: '#0c4a6e'
+                                            }}>
+                                                <span style={{ 
+                                                    marginRight: '8px', 
+                                                    fontSize: '16px' 
+                                                }}>👤</span>
+                                                <span style={{ color: '#374151' }}>Point of Contact:</span>
+                                                <span style={{ 
+                                                    marginLeft: '8px',
+                                                    color: '#0c4a6e',
+                                                    fontSize: '15px'
+                                                }}>{clientInfo.name}</span>
+                                                <span style={{ 
+                                                    marginLeft: '6px',
+                                                    color: '#6b7280',
+                                                    fontSize: '13px',
+                                                    fontWeight: 400
+                                                }}>({clientInfo.email})</span>
                                             </div>
+                                            
                                             <div>
-                                                <strong>Matters</strong>
-                                                <ul>
-                                                    {clientInfo.matters.map(m => (
-                                                        <li key={m}>{m}</li>
+                                                <div style={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    marginBottom: '8px',
+                                                    fontSize: '14px',
+                                                    fontWeight: 600,
+                                                    color: '#374151'
+                                                }}>
+                                                    <span style={{ 
+                                                        marginRight: '8px', 
+                                                        fontSize: '16px' 
+                                                    }}>📁</span>
+                                                    Active Matters ({clientInfo.matters.length})
+                                                </div>
+                                                <div style={{ 
+                                                    display: 'flex', 
+                                                    flexDirection: 'column', 
+                                                    gap: '6px',
+                                                    marginLeft: '24px'
+                                                }}>
+                                                    {clientInfo.matters.map((matter, index) => (
+                                                        <div key={matter} style={{ 
+                                                            padding: '8px 12px',
+                                                            backgroundColor: '#ffffff',
+                                                            border: '1px solid #e5e7eb',
+                                                            borderRadius: '6px',
+                                                            fontSize: '13px',
+                                                            color: '#374151',
+                                                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                                            display: 'flex',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                            <span style={{ 
+                                                                marginRight: '8px',
+                                                                color: '#9ca3af',
+                                                                fontSize: '12px',
+                                                                fontWeight: 500
+                                                            }}>{index + 1}.</span>
+                                                            {matter}
+                                                        </div>
                                                     ))}
-                                                </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -349,6 +468,9 @@ const CallHub: React.FC = () => {
 
                                     {missingEmail && (
                                         <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
+                                    )}
+                                    {invalidEmailFormat && (
+                                        <div style={{ color: 'red' }}>Please enter a valid email address (e.g., name@domain.com).</div>
                                     )}
                                 </Stack>
                             </div>
@@ -540,7 +662,7 @@ const CallHub: React.FC = () => {
                             </div>
                         )}
 
-                        {callKind === 'message' && (
+                        {callKind === 'message' && enquiryType && (
                                     <>
                                         <Dropdown
                                             label="Which best describes caller?"
@@ -582,6 +704,10 @@ const CallHub: React.FC = () => {
                                 )}
 
                                 {callKind === 'enquiry' && (
+                                    // Show enquiry form only after contact preference is selected (for new matters) or relationship is selected (for non-clients)
+                                    (isClient === true && isSeparateMatter === true && contactPreference) ||
+                                    (isClient === false && relationship)
+                                ) && (
                                     <>
                                         <Dropdown
                                             label="Area of Work"
@@ -688,6 +814,10 @@ const CallHub: React.FC = () => {
                         )}
 
                         {callKind === 'enquiry' && (
+                            // Show contact options only after contact preference is selected (for new matters) or relationship is selected (for non-clients)
+                            (isClient === true && isSeparateMatter === true && contactPreference) ||
+                            (isClient === false && relationship)
+                        ) && (
                             <div>
                                 <strong>Contact Options</strong>
                                 <ul>
@@ -750,7 +880,7 @@ const CallHub: React.FC = () => {
                                     setAutoReroutedFromClientEnquiry(false);
                                 }} 
                             />
-                            <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime} />
+                            <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime || !!missingEmail || !!invalidEmailFormat} />
                         </Stack>
 
                         {claimTime && <div>Claimed at {new Date(claimTime).toLocaleTimeString()}</div>}
