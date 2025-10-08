@@ -15,6 +15,7 @@ import { sendCallEvent, lookupClient } from './CallHubApi.mock';
 import { EnquiryType, ContactPreference, ClientInfo, CallKind } from './types';
 import LogicTree from './LogicTree.tsx';
 import JsonPreview from './JsonPreview.tsx';
+import { sendToAzureFunction } from './dataMapping';
 
 const CallHub: React.FC = () => {
     // Core call data
@@ -198,6 +199,39 @@ const CallHub: React.FC = () => {
     const handleClaim = async () => {
         const now = Date.now();
         setClaimTime(now);
+        setSaveError(null);
+        setAzureFunctionSent(false);
+        setAzureFunctionError(null);
+        
+        try {
+            // Send data to Azure Function endpoint
+            await sendToAzureFunction({
+                firstName,
+                lastName,
+                email,
+                contactPhone,
+                countryCode,
+                notes,
+                areaOfWork,
+                propertyDescription,
+                constructionDescription,
+                callerCategory,
+                propertyValue,
+                briefSummary,
+                callKind,
+                isClient,
+                contactPreference
+            });
+            
+            setAzureFunctionSent(true);
+            console.log('✅ Successfully submitted to Azure Function');
+            
+        } catch (azureError: any) {
+            console.error('❌ Azure Function submission failed:', azureError);
+            setAzureFunctionError(azureError.message || 'Failed to submit to Azure Function');
+        }
+        
+        // Also send the claim event for internal tracking
         try {
             await sendCallEvent({
                 action: 'claim',
@@ -211,7 +245,7 @@ const CallHub: React.FC = () => {
                 claimTime: now,
             });
         } catch (err) {
-            console.error(err);
+            console.error('Internal tracking error:', err);
         }
     };
 
