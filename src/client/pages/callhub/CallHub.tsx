@@ -239,6 +239,40 @@ const CallHub: React.FC = () => {
     const missingEmail = emailRequiredByFlow && !hasAtSymbol;
     const invalidEmailFormat = hasAtSymbol && email && (!email.includes('.') || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/));
 
+    // Comprehensive form validation - check all required fields
+    const validateRequiredFields = (): boolean => {
+        // Always required fields
+        if (!callKind) return false;
+        if (!firstName.trim()) return false;
+        if (!lastName.trim()) return false;
+        // Note: Phone number is optional
+        
+        // Email validation
+        if (missingEmail || invalidEmailFormat) return false;
+        
+        // Call type specific validation
+        if (callKind === 'message') {
+            if (!enquiryType) return false; // Message type is required
+        }
+        
+        if (callKind === 'enquiry') {
+            if (isClient === null) return false; // "Is this a client?" is required
+            
+            // Client flow validation
+            if (isClient === true) {
+                if (isSeparateMatter === null) return false; // Separate matter question is required
+                if (isSeparateMatter === true && !contactPreference) return false; // Contact preference required for new matters
+            }
+            
+            // Non-client flow validation
+            if (isClient === false && !relationship) return false; // Relationship is required for non-clients
+        }
+        
+        return true;
+    };
+    
+    const canSubmit = validateRequiredFields();
+
     // Prepare form data for components
     const formData = {
         isClient,
@@ -880,7 +914,7 @@ const CallHub: React.FC = () => {
                                     setAutoReroutedFromClientEnquiry(false);
                                 }} 
                             />
-                            <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime || !!missingEmail || !!invalidEmailFormat} />
+                            <PrimaryButton text="Submit" onClick={handleClaim} disabled={!!claimTime || !canSubmit} />
                         </Stack>
 
                         {claimTime && <div>Claimed at {new Date(claimTime).toLocaleTimeString()}</div>}
