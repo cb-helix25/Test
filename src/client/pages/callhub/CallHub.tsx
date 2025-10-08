@@ -233,10 +233,10 @@ const CallHub: React.FC = () => {
         }
     };
 
-    // Email validation: always required when business logic requires it, but only validated as email format if @ is present
+    // Email validation: always required when business logic requires it, but only satisfied when @ symbol is present
     const emailRequiredByFlow = (callKind === 'enquiry' || contactPreference === 'email');
-    const missingEmail = emailRequiredByFlow && !email;
     const hasAtSymbol = email.includes('@');
+    const missingEmail = emailRequiredByFlow && !hasAtSymbol;
     const invalidEmailFormat = hasAtSymbol && email && (!email.includes('.') || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/));
 
     // Prepare form data for components
@@ -467,7 +467,7 @@ const CallHub: React.FC = () => {
                                     )}
 
                                     {missingEmail && (
-                                        <div style={{ color: 'red' }}>Cannot proceed without an email address.</div>
+                                        <div style={{ color: 'red' }}>Cannot submit form without an email address.</div>
                                     )}
                                     {invalidEmailFormat && (
                                         <div style={{ color: 'red' }}>Please enter a valid email address (e.g., name@domain.com).</div>
