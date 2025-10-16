@@ -50,7 +50,6 @@ const CallHub: React.FC = () => {
     const [ccTeamMember, setCcTeamMember] = useState('');
     const [urgent, setUrgent] = useState(false);
     const [urgentReason, setUrgentReason] = useState('');
-    const [callerCategory, setCallerCategory] = useState<string | undefined>();
     const [messageFrom, setMessageFrom] = useState<string | undefined>();
     const [areaOfWork, setAreaOfWork] = useState<string | undefined>();
 
@@ -114,7 +113,6 @@ const CallHub: React.FC = () => {
         setSearchTerm('');
         setWebPageVisited('');
         setBriefSummary('');
-        setCallerCategory(undefined);
         
         // Reset area-specific fields
         setPropertyDescription(undefined);
@@ -161,16 +159,6 @@ const CallHub: React.FC = () => {
         { key: '+353', text: '+353' },
     ];
 
-    const callerOptions: IDropdownOption[] = [
-        { key: 'property-owner', text: 'Property Owner' },
-        { key: 'tenant', text: 'Tenant' },
-        { key: 'director', text: 'Director' },
-        { key: 'company-owner', text: 'Company Owner' },
-        { key: 'construction-professional', text: 'Construction or Property Professional' },
-        { key: 'solicitor', text: 'Solicitor' },
-        { key: 'other', text: 'Unsure/Other' },
-    ];
-
     const teamOptions: IDropdownOption[] = [
         { key: 'Alex Cook', text: 'Alex Cook' },
         { key: "Bianca O'Donnell", text: "Bianca O'Donnell" },
@@ -215,7 +203,6 @@ const CallHub: React.FC = () => {
                 areaOfWork,
                 propertyDescription,
                 constructionDescription,
-                callerCategory,
                 propertyValue,
                 briefSummary,
                 callKind,
@@ -324,7 +311,6 @@ const CallHub: React.FC = () => {
         claimTime,
         callKind,
         enquiryType,
-        callerCategory,
         messageFrom,
         teamMember,
         ccTeamMember,
@@ -732,13 +718,6 @@ const CallHub: React.FC = () => {
 
                         {callKind === 'message' && enquiryType && (
                                     <>
-                                        <Dropdown
-                                            label="Which best describes caller?"
-                                            options={callerOptions}
-                                            selectedKey={callerCategory}
-                                            onChange={(_, o) => setCallerCategory(o?.key as string)}
-                                        />
-                                        
                                         <TextField
                                             label="File Reference (if known)"
                                             value={messageFrom}
@@ -853,22 +832,7 @@ const CallHub: React.FC = () => {
                                             />
                                         )}
 
-                                        {(areaOfWork === 'other' || !areaOfWork) && (
-                                            <Dropdown
-                                                label="Which best describes you?"
-                                                options={[
-                                                    { key: 'property-owner', text: 'Property Owner' },
-                                                    { key: 'director', text: 'Director' },
-                                                    { key: 'construction-property-professional', text: 'Construction or Property Professional' },
-                                                    { key: 'tenant', text: 'Tenant' },
-                                                    { key: 'company-owner', text: 'Company Owner' },
-                                                    { key: 'solicitor', text: 'Solicitor' },
-                                                    { key: 'other', text: 'Other' },
-                                                ]}
-                                                selectedKey={callerCategory}
-                                                onChange={(_, o) => setCallerCategory(o?.key as string)}
-                                            />
-                                        )}
+
                                     </>
                                 )}
 
@@ -925,7 +889,6 @@ const CallHub: React.FC = () => {
                                     setCcTeamMember('');
                                     setUrgent(false);
                                     setUrgentReason('');
-                                    setCallerCategory(undefined);
                                     setMessageFrom(undefined);
                                     setAreaOfWork(undefined);
                                     setHeardAboutUs(undefined);
