@@ -1,7 +1,7 @@
 /* Matter Opening Card Styles */
 .matter-opening-card {
   background: var(--section-background, #fff);
-  border: 1px solid var(--border-color, #e1e1e1);
+  border: 1.5px solid var(--border-color, #e1e1e1);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
@@ -26,6 +26,10 @@
   font-size: 16px;
   color: var(--dark-blue, #323130);
   transition: color 0.3s;
+}
+
+[data-theme='dark'] .step-title {
+  color: var(--grey-text, #f5f6fa);
 }
 
 .step-header.active .step-title {
@@ -144,13 +148,25 @@
 
 /* Client Info Display */
 .client-info {
-  background: var(--grey, #f3f2f1);
-  border: 1px solid var(--border-color, #e1dfdd);
+  background: var(--section-background, #23272f);
+  border: 1.5px solid var(--border-color, #4dc3ff);
   border-radius: 4px;
   padding: 16px;
   margin: 16px 0;
-  color: var(--dark-blue, #323130);
+  color: var(--dark-blue, #e6e9f5);
   transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+[data-theme='dark'] .matter-opening-card {
+  background: var(--section-background, #23272f);
+  border: 1.5px solid var(--border-color, #4dc3ff);
+  color: var(--grey-text, #f5f6fa);
+}
+
+[data-theme='dark'] .client-info {
+  background: var(--section-background, #23272f);
+  border: 1.5px solid var(--border-color, #4dc3ff);
+  color: var(--grey-text, #f5f6fa);
 }
 
 .client-info strong {
@@ -168,13 +184,19 @@
 
 /* Contact Options */
 .contact-options {
-  background: var(--grey, #f8f9fa);
-  border: 1px solid var(--border-color, #e1e1e1);
+  background: var(--section-background, #f8f9fa);
+  border: 1.5px solid var(--border-color, #e1e1e1);
   border-radius: 4px;
   padding: 16px;
   margin: 16px 0;
   color: var(--dark-blue, #323130);
   transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+[data-theme='dark'] .contact-options {
+  background: var(--section-background, #23272f);
+  border: 1.5px solid var(--border-color, #4dc3ff);
+  color: var(--grey-text, #f5f6fa);
 }
 
 .contact-options strong {
