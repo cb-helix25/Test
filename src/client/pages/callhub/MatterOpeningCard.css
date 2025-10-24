@@ -159,13 +159,13 @@
 
 [data-theme='dark'] .matter-opening-card {
   background: var(--section-background, #23272f);
-  border: 1.5px solid var(--border-color, #4dc3ff);
+  border: none;
   color: var(--grey-text, #f5f6fa);
 }
 
 [data-theme='dark'] .client-info {
   background: var(--section-background, #23272f);
-  border: 1.5px solid var(--border-color, #4dc3ff);
+  border: none;
   color: var(--grey-text, #f5f6fa);
 }
 
@@ -195,7 +195,7 @@
 
 [data-theme='dark'] .contact-options {
   background: var(--section-background, #23272f);
-  border: 1.5px solid var(--border-color, #4dc3ff);
+  border: none;
   color: var(--grey-text, #f5f6fa);
 }
 
