@@ -1,3 +1,8 @@
+[data-theme='dark'] .matter-opening-card > div,
+[data-theme='dark'] .client-info > div,
+[data-theme='dark'] .contact-options > div {
+  border: none !important;
+}
 [data-theme='dark'] .matter-opening-card,
 [data-theme='dark'] .client-info,
 [data-theme='dark'] .contact-options {
