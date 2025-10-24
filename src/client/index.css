@@ -1,3 +1,33 @@
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select,
+[data-theme='dark'] .ms-TextField-field,
+[data-theme='dark'] .ms-Dropdown,
+[data-theme='dark'] .ms-ComboBox,
+[data-theme='dark'] .ms-TextField {
+  color: #fff !important;
+  background: var(--section-background, #23272f) !important;
+  border-color: var(--border-color, #4dc3ff) !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: #e6e9f5 !important;
+  opacity: 1;
+}
+
+[data-theme='dark'] .ms-Button,
+[data-theme='dark'] .button-group button {
+  color: #fff !important;
+  background: var(--button-background, #181a1b) !important;
+  border: 2px solid var(--border-color, #4dc3ff) !important;
+}
+[data-theme='dark'] .ms-Button:hover,
+[data-theme='dark'] .button-group button:hover {
+  background: var(--hover-background, #23272f) !important;
+  color: #fff !important;
+  border: 2px solid var(--border-color, #4dc3ff) !important;
+}
  :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
