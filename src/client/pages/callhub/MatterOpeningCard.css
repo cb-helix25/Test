@@ -1,3 +1,8 @@
+[data-theme='dark'] .matter-opening-card,
+[data-theme='dark'] .client-info,
+[data-theme='dark'] .contact-options {
+  border: none !important;
+}
 /* Matter Opening Card Styles */
 .matter-opening-card {
   background: var(--section-background, #fff);
