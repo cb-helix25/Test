@@ -1,31 +1,35 @@
 /* Matter Opening Card Styles */
 .matter-opening-card {
-  background: var(--section-background, #FFFFFF);
-  border: 1px solid var(--border-color, #F4F4F6);
+  background: var(--section-background, #fff);
+  border: 1px solid var(--border-color, #e1e1e1);
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
+  color: var(--dark-blue, #061733);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .step-header {
   padding: 16px 20px;
-  border-bottom: 1px solid #e1e1e1;
-  background: #f8f9fa;
+  border-bottom: 1px solid var(--border-color, #e1e1e1);
+  background: var(--grey, #f8f9fa);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .step-header.active {
-  background: #e3f0fc;
-  border-bottom-color: #3690CE;
+  background: var(--highlight, #e3f0fc);
+  border-bottom-color: var(--highlight, #3690CE);
 }
 
 .step-title {
   font-weight: 600;
   font-size: 16px;
-  color: #323130;
+  color: var(--dark-blue, #323130);
+  transition: color 0.3s;
 }
 
 .step-header.active .step-title {
-  color: #3690CE;
+  color: var(--highlight, #3690CE);
 }
 
 .step-content {
@@ -49,12 +53,13 @@
   align-items: center;
   justify-content: center;
   padding: 14.4px 8px;
-  border: 1px solid #e0e0e0;
-  background: #f8f8f8;
+  border: 1px solid var(--border-color, #e0e0e0);
+  background: var(--grey, #f8f8f8);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(.4,0,.2,1);
   border-radius: 4px;
   min-height: 48px;
+  color: var(--dark-blue, #061733);
 }
 
 .client-type-icon-btn .client-type-label {
@@ -65,14 +70,14 @@
 }
 
 .client-type-icon-btn:not(.active):hover {
-  background: #e3f0fc;
-  border-color: #3690CE;
+  background: var(--highlight, #e3f0fc);
+  border-color: var(--highlight, #3690CE);
 }
 
 .client-type-icon-btn.active {
-  background: #e3f0fc;
-  border-color: #3690CE;
-  color: #3690CE;
+  background: var(--highlight, #e3f0fc);
+  border-color: var(--highlight, #3690CE);
+  color: var(--highlight, #3690CE);
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -98,6 +103,16 @@
   gap: 12px;
   margin-top: 24px;
 }
+.button-group button, .ms-Button {
+  background: var(--button-background, #0078d4) !important;
+  color: var(--button-text, #fff) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  transition: background 0.3s, color 0.3s;
+}
+.button-group button:hover, .ms-Button:hover {
+  background: var(--hover-background, #005a9e) !important;
+}
 
 /* Status Messages */
 .status-message {
@@ -110,31 +125,36 @@
   background: #dff6dd;
   border: 1px solid #107c10;
   color: #107c10;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .status-message.error {
   background: #fed9da;
   border: 1px solid #d13438;
   color: #d13438;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .status-message.warning {
   background: #fff4ce;
   border: 1px solid #ffb900;
   color: #8a8886;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 /* Client Info Display */
 .client-info {
-  background: #f3f2f1;
-  border: 1px solid #e1dfdd;
+  background: var(--grey, #f3f2f1);
+  border: 1px solid var(--border-color, #e1dfdd);
   border-radius: 4px;
   padding: 16px;
   margin: 16px 0;
+  color: var(--dark-blue, #323130);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .client-info strong {
-  color: #323130;
+  color: var(--dark-blue, #323130);
 }
 
 .client-info ul {
@@ -148,15 +168,17 @@
 
 /* Contact Options */
 .contact-options {
-  background: #f8f9fa;
-  border: 1px solid #e1e1e1;
+  background: var(--grey, #f8f9fa);
+  border: 1px solid var(--border-color, #e1e1e1);
   border-radius: 4px;
   padding: 16px;
   margin: 16px 0;
+  color: var(--dark-blue, #323130);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .contact-options strong {
-  color: #323130;
+  color: var(--dark-blue, #323130);
   margin-bottom: 8px;
   display: block;
 }
@@ -168,7 +190,7 @@
 
 .contact-options li {
   margin-bottom: 4px;
-  color: #605e5c;
+  color: var(--grey-text, #605e5c);
 }
 
 /* Responsive Design */

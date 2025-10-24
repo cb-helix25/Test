@@ -1,4 +1,4 @@
-:root {
+ :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -11,15 +11,16 @@
   --accent: #87F3F3;
   --cta: #D65541;
   --grey: #F4F4F6;
-  --grey-text: #6B6B6B;
+  --grey-text: #222;
   --section-background: #FFFFFF;
-  --border-color: #F4F4F6;
+  --border-color: #E1E1E1;
   --button-background: #0078d4;
-  --button-text: #ffffff;
+  --button-text: #061733;
   --hover-background: #005a9e;
 
   color: var(--dark-blue);
   background-color: var(--grey);
+  transition: background 0.3s, color 0.3s;
 }
 
 /* Dark mode variables */
@@ -31,7 +32,7 @@
   --accent: #2ad1d1;
   --cta: #ff8a65;
   --grey: #181a1b;
-  --grey-text: #b0b0b0;
+  --grey-text: #e6e9f5;
   --section-background: #23272f;
   --border-color: #23272f;
   --button-background: #222e3c;
@@ -40,6 +41,7 @@
 
   color: var(--dark-blue);
   background-color: var(--grey);
+  transition: background 0.3s, color 0.3s;
 }
 
 body {
@@ -47,4 +49,17 @@ body {
   font-family: inherit;
   background-color: var(--grey);
   color: var(--dark-blue);
+  transition: background 0.3s, color 0.3s;
+}
+
+input, textarea, select, .ms-TextField-field, .ms-Dropdown, .ms-ComboBox, .ms-TextField, .ms-Button {
+  background: var(--section-background) !important;
+  color: var(--dark-blue) !important;
+  border-color: var(--border-color) !important;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--grey-text) !important;
+  opacity: 1;
 }

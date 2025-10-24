@@ -25,9 +25,17 @@ const ThemeToggle: React.FC = () => {
         borderRadius: 20,
         padding: '8px 16px',
         cursor: 'pointer',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        fontWeight: 600,
+        fontSize: 16,
+        transition: 'background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s',
+        outline: 'none',
       }}
       aria-label="Toggle light/dark mode"
+      tabIndex={0}
+      onMouseDown={e => e.currentTarget.style.transform = 'scale(0.93)'}
+      onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
     >
       {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
     </button>
