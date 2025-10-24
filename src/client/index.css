@@ -33,6 +33,93 @@
   color: #181a1b !important;
 }
 
+/* All buttons, including Fluent UI and custom, always have blue border and white text in dark mode */
+[data-theme='dark'] .ms-Button,
+[data-theme='dark'] .button-group button,
+[data-theme='dark'] button,
+[data-theme='dark'] .ms-Button--default,
+[data-theme='dark'] .ms-Button--primary,
+[data-theme='dark'] .ms-Button--action {
+  color: #fff !important;
+  background: #181a1b !important;
+  border: 2px solid #4dc3ff !important;
+  box-shadow: none !important;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+[data-theme='dark'] .ms-Button:hover,
+[data-theme='dark'] .button-group button:hover,
+[data-theme='dark'] button:hover,
+[data-theme='dark'] .ms-Button--default:hover,
+[data-theme='dark'] .ms-Button--primary:hover,
+[data-theme='dark'] .ms-Button--action:hover {
+  background: #4dc3ff !important;
+  color: #181a1b !important;
+  border: 2px solid #4dc3ff !important;
+}
+
+/* ChoiceGroup/option buttons (e.g. what type of call/message) */
+[data-theme='dark'] .ms-ChoiceField,
+[data-theme='dark'] .ms-Toggle,
+[data-theme='dark'] .ms-ChoiceField-field,
+[data-theme='dark'] .choice-btn,
+[data-theme='dark'] .client-type-icon-btn {
+  background: #181a1b !important;
+  color: #fff !important;
+  border: 2px solid #4dc3ff !important;
+  box-shadow: none !important;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+[data-theme='dark'] .ms-ChoiceField-field:hover,
+[data-theme='dark'] .choice-btn:hover,
+[data-theme='dark'] .client-type-icon-btn:hover,
+[data-theme='dark'] .ms-ChoiceField-field.is-checked,
+[data-theme='dark'] .choice-btn.active,
+[data-theme='dark'] .client-type-icon-btn.active {
+  background: #4dc3ff !important;
+  color: #181a1b !important;
+  border: 2px solid #4dc3ff !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: #e6e9f5 !important;
+  opacity: 1;
+}
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select,
+[data-theme='dark'] .ms-TextField-field,
+[data-theme='dark'] .ms-Dropdown,
+[data-theme='dark'] .ms-ComboBox,
+[data-theme='dark'] .ms-TextField,
+[data-theme='dark'] .ms-Dropdown-title,
+[data-theme='dark'] .ms-ComboBox-Input,
+[data-theme='dark'] .ms-TextField-wrapper {
+  background: #23272f !important;
+  color: #fff !important;
+  border-color: #4dc3ff !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] input:focus,
+[data-theme='dark'] textarea:focus,
+[data-theme='dark'] select:focus,
+[data-theme='dark'] .ms-TextField-field:focus,
+[data-theme='dark'] .ms-Dropdown:focus,
+[data-theme='dark'] .ms-ComboBox:focus,
+[data-theme='dark'] .ms-TextField:focus {
+  outline: 2px solid #4dc3ff !important;
+  border-color: #4dc3ff !important;
+}
+
+[data-theme='dark'] .ms-Dropdown-title.is-open,
+[data-theme='dark'] .ms-Dropdown-title:active,
+[data-theme='dark'] .ms-ComboBox-Input:focus,
+[data-theme='dark'] .ms-ComboBox-Input:active {
+  background: #4dc3ff !important;
+  color: #181a1b !important;
+}
+
 [data-theme='dark'] .ms-Button,
 [data-theme='dark'] .button-group button {
   color: #fff !important;
