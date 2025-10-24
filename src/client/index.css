@@ -22,6 +22,26 @@
   background-color: var(--grey);
 }
 
+/* Dark mode variables */
+[data-theme='dark'] {
+  --website-blue: #e6e9f5;
+  --dark-blue: #e6e9f5;
+  --blue: #5db0ff;
+  --highlight: #5db0ff;
+  --accent: #2ad1d1;
+  --cta: #ff8a65;
+  --grey: #181a1b;
+  --grey-text: #b0b0b0;
+  --section-background: #23272f;
+  --border-color: #23272f;
+  --button-background: #222e3c;
+  --button-text: #e6e9f5;
+  --hover-background: #2a3a4d;
+
+  color: var(--dark-blue);
+  background-color: var(--grey);
+}
+
 body {
   margin: 0;
   font-family: inherit;
